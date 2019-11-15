@@ -6,7 +6,7 @@
 #    By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/15 09:22:08 by afeuerst          #+#    #+#              #
-#    Updated: 2019/11/15 09:55:33 by afeuerst         ###   ########.fr        #
+#    Updated: 2019/11/15 12:53:47 by afeuerst         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,19 +33,19 @@ LIBCOREWAR_OBJECTS = $(LIBCOREWAR_SRC:.c=.o)
 COREWAR = corewar
 ASM = asm
 
-all: $(LIBCOREWAR_LOCATION) $(ASM) $(COREWAR) Makefile
+all: Makefile $(LIBCOREWAR_LOCATION) $(ASM) $(COREWAR)
 
 $(LIBCOREWAR_LOCATION): $(LIBCOREWAR_OBJECTS)
 	ar -rcs $(LIBCOREWAR_LOCATION) $(LIBCOREWAR_OBJECTS)
 
 %.o: %.c $(LIBCOREWAR_HEADERS)
-	$(COMPILER) -c $(FLAGS) -I $(LIBCOREWAR_INC) $< -o $@
+	clang -c $(FLAGS) -I $(LIBCOREWAR_INC) $< -o $@
 
 $(ASM): $(LIBCOREWAR_LOCATION) $(ASM_SRC)
-	clang -I $(ASM_INC) $(FLAGS) $(LIBCOREWAR_LOCATION) $(ASM_SRC) -o $(ASM)
+	clang -I $(LIBCOREWAR_INC) -I $(ASM_INC) $(FLAGS) $(LIBCOREWAR_LOCATION) $(ASM_SRC) -o $(ASM)
 
 $(COREWAR): $(LIBCOREWAR_LOCATION) $(COREWAR_SRC)
-	clang -I $(COREWAR_INC) $(FLAGS) $(LIBCOREWAR_LOCATION) $(COREWAR_SRC) -o $(COREWAR)
+	clang -I $(LIBCOREWAR_INC) -I $(COREWAR_INC) $(FLAGS) $(LIBCOREWAR_LOCATION) $(COREWAR_SRC) -o $(COREWAR)
 
 clean:
 	rm -rf $(LIBCOREWAR_OBJECTS)

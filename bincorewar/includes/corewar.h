@@ -6,13 +6,13 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 09:40:13 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/15 09:40:27 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/15 11:46:56 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COREWAR_H
 # define COREWAR_H
 
-
+# include "libcorewar.h"
 
 #endif

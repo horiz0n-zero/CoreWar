@@ -1,28 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   asm.h                                              :+:      :+:    :+:   */
+/*   libcorewar_get_asm_file.h                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 09:39:29 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/15 10:46:47 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/11/15 11:45:34 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/11/15 14:34:54 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ASM_H
-# define ASM_H
+#ifndef LIBCOREWAR_GET_ASM_FILE_H
+# define LIBCOREWAR_GET_ASM_FILE_H
 
 # include "libcorewar.h"
 
-# define FLAGS_O 1 << 0
-# define FLAGS_D 1 << 1
-
-struct			s_asm
-{
-	int			flags;
-	int			toto;
-	char		*out_directory;
-};
+static struct s_libcorewar_asm_file	*get_asm_file_opcodes(struct s_libcorewar_asm_file *const file, char **const error) __attribute__((always_inline));
 
 #endif

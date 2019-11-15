@@ -1,28 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   asm.h                                              :+:      :+:    :+:   */
+/*   libcorewar_error.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 09:39:29 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/15 10:46:47 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/11/15 11:55:57 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/11/15 12:50:20 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ASM_H
-# define ASM_H
+#include "libcorewar.h"
 
-# include "libcorewar.h"
-
-# define FLAGS_O 1 << 0
-# define FLAGS_D 1 << 1
-
-struct			s_asm
+void			*libcorewar_error(char *const ptr, char **const error_ptr, ...)
 {
-	int			flags;
-	int			toto;
-	char		*out_directory;
-};
+	va_list		args;
+	void		*p;
 
-#endif
+	va_start(args, error_ptr);
+	p = va_arg(args, void*);
+	while (p)
+	{
+		free(p);
+		p = va_arg(args, void*);
+	}
+	va_end(args);
+	*error_ptr = ptr;
+	return (NULL);
+}
