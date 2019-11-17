@@ -15,8 +15,7 @@
 
 void		print_file(struct s_libcorewar_asm_file *const file)
 {
-	printf("%s %s\n", file->header->prog_name, file->header->comment);
-	printf("%d %lld\n", file->header->prog_size, file->content_stat.st_size);
+	printf("- %s -\n", file->header->prog_name);
 }
 
 int			main(int argc, char **argv)

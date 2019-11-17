@@ -16,12 +16,18 @@
 # include "libcorewar_shared.h"
 
 # define IND_SIZE 2
-# define REG_SIZE 4
-# define DIR_SIZE REG_SIZE
+# define REG_SIZE 1
+# define DIR_SIZE 4
 
 # define REG_CODE 1
 # define DIR_CODE 2
 # define IND_CODE 3
+
+# define T_REG 1
+# define T_DIR 2
+# define T_IND 4
+# define T_LAB 8
+
 
 # define MAX_ARGS_NUMBER 4
 # define MAX_PLAYERS 4
@@ -48,15 +54,10 @@
 
 typedef char	t_arg_type;
 
-#define T_REG 1
-#define T_DIR 2
-#define T_IND 4
-#define T_LAB 8
 
 # define PROG_NAME_LENGTH (128)
 # define COMMENT_LENGTH (2048)
 # define COREWAR_EXEC_MAGIC 0xea83f3
-# define COREWAR_EXEC_MAGIC_L 0xf383ea00
 
 typedef struct								s_asm_header
 {
@@ -76,7 +77,9 @@ struct										s_libcorewar_ref_opcode_get
 	const char								*name;
 	const int								parameters;
 	const int								instructions;
-	const int								parameters_type[4];
+	const int								parameters_encoding;
+	const int								parameters_direct_small;
+	const int								parameters_type[MAX_ARGS_NUMBER];
 };
 
 /* ************************************************************************** */
@@ -88,7 +91,11 @@ typedef struct s_libcorewar_asm_file		t_libcorewar_asm_file;
 struct										s_libcorewar_opcode_get
 {
 	const t_libcorewar_ref_opcode_get		*ref;
-	int										parameters[4];
+	char									*start;
+	char									*label;
+	int										parameters[MAX_ARGS_NUMBER];
+	int										parameters_type[MAX_ARGS_NUMBER];
+	const void								*parameters_labels[MAX_ARGS_NUMBER];
 	struct s_libcorewar_opcode_get			*next;
 };
 
@@ -96,6 +103,7 @@ struct										s_libcorewar_asm_file // source is .cor
 {
 	struct stat								content_stat;
 	char									*content;
+	char									*content_end;
 	struct s_asm_header						*header;
 	struct s_libcorewar_opcode_get			*opcodes;
 };
