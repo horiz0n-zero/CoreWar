@@ -1,30 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   asm.h                                              :+:      :+:    :+:   */
+/*   libft_printf.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 09:39:29 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 14:27:38 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/10/29 08:46:04 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/11/17 10:09:17 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ASM_H
-# define ASM_H
+#ifndef LIBFT_PRINTF_H
+# define LIBFT_PRINTF_H
 
-# include "libcorewar.h"
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdarg.h>
 
-# define FLAGS_D 1 << 0
-# define FLAGS_P 1 << 1
-# define FLAGS_H 1 << 2
+int		ft_printf(const char *const format, ...);
+int		ft_dprintf(const int fd, const char *const format, ...);
+int		ft_asprintf(char **const ret, const char *const format, ...);
 
 
-struct			s_asm
-{
-	int			flags;
-	int			pad;
-	char		*prefix;
-};
 
 #endif

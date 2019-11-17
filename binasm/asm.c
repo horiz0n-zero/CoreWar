@@ -6,53 +6,64 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 09:39:48 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/15 14:40:34 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/17 14:28:03 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "asm.h"
 
-static struct s_asm				g_compiler =
+static struct s_asm					g_compiler =
 {
 	.flags = 0,
-	.toto = 0,
-	.out_directory = NULL
+	.pad = 0,
+	.prefix = NULL
 };
 
-static const struct s_argument	g_arguments[256] =
+static const struct s_argument		g_arguments[256] =
 {
-	['o'] = {"output-directory", FLAGS_O, 1, &g_compiler.out_directory},
-	['d'] = {"decompile", FLAGS_D, 0, NULL}
+	['d'] = {"disassemble", FLAGS_D, 0, NULL},
+	['p'] = {"prefix", FLAGS_P, 1, &g_compiler.prefix},
+	['h'] = {"hexcolors", FLAGS_H, 0, NULL}
 };
 
-static const char				*g_usages[] =
+static const char					*g_usages[] =
 {
-	"usage:\tasm [-od] -- file.s ...\n\n",
-	"\t-o --output-directory <file> generate .cor into file directory\n",
-	"\t-d --disassemble\n",
+	"usage:\tasm [-d] [-p <prefix>] -- file ...\n\n",
+	"\t-d --disassemble transform .cor into readable .s file\n",
+	"\t\t-p --prefix <prefix> each labels will be named :<prefix>x instead of :label_x\n",
+	"\t\t-h --hexcolors out the file in colored\n",
 	NULL
 };
 
-static void					compiler_process_file(const char *const file)
+static void							compiler_process_file(const char *const named)
 {
+	struct s_libcorewar_asm_file	*file;
+	char							*error;
+
 	if (g_compiler.flags & FLAGS_D)
 	{
-
+		if ((file = libcorewar_get_asm_file(named, &error, g_compiler.prefix)))
+		{
+			if (g_compiler.flags & FLAGS_H)
+				libcorewar_out_asm_file_hexcolors(STDOUT_FILENO, file);
+			else
+				libcorewar_out_asm_file(STDOUT_FILENO, file);
+		}
+		else
+			ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error);
 	}
 }
 
-int							main(int argc, char **argv)
+int									main(int argc, char **argv)
 {
-	char					*error;
+	char							*error;
 
 	if (!(argv = arguments_get(++argv, g_arguments, &g_compiler.flags, &error)))
 	{
+		ft_dprintf(STDERR_FILENO, "%s\n", error);
 		argv = (char**)g_usages;
 		while (*argv)
-		{
-			write(STDERR_FILENO, *argv, ft_strlen(*argv));
-			++argv;
-		}
+			ft_dprintf(STDERR_FILENO, "%s", *argv++);
 		return (EXIT_FAILURE);
 	}
 	while (*argv)

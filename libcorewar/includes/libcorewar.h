@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:05:14 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/15 15:29:27 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/17 14:34:40 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ struct										s_libcorewar_ref_opcode_get
 	const int								instructions;
 	const int								parameters_encoding;
 	const int								parameters_direct_small;
+	const int								opvalue;
+	const int								pad;
 	const int								parameters_type[MAX_ARGS_NUMBER];
 };
 
@@ -104,16 +106,22 @@ struct										s_libcorewar_asm_file // source is .cor
 	struct stat								content_stat;
 	char									*content;
 	char									*content_end;
+	const char								*labels_prefix;
+	int										labels_count;
+	int										pad;
 	struct s_asm_header						*header;
 	struct s_libcorewar_opcode_get			*opcodes;
 };
 
 /* ************************************************************************** */
-struct s_libcorewar_asm_file	*libcorewar_get_asm_file(const char *const file, char **const error);
+struct s_libcorewar_asm_file	*libcorewar_get_asm_file(const char *const file, char **const error, const char *const prefix);
 
 
+// print out
+void							libcorewar_out_asm_file(const int fd, struct s_libcorewar_asm_file *const file);
+void							libcorewar_out_asm_file_hexcolors(const int fd, struct s_libcorewar_asm_file *const file);
 
-
+// special
 void							*libcorewar_error(char *const ptr, char **const error_ptr, ...);
 
 

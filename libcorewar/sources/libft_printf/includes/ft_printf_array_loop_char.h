@@ -1,30 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   asm.h                                              :+:      :+:    :+:   */
+/*   ft_printf_array_loop_char.h                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 09:39:29 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 14:27:38 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/11/02 16:32:13 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/11/03 09:45:10 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ASM_H
-# define ASM_H
+#ifndef FT_PRINTF_ARRAY_LOOP_CHAR_H
+# define FT_PRINTF_ARRAY_LOOP_CHAR_H
 
-# include "libcorewar.h"
+# include "libft_printf_internal.h"
 
-# define FLAGS_D 1 << 0
-# define FLAGS_P 1 << 1
-# define FLAGS_H 1 << 2
-
-
-struct			s_asm
-{
-	int			flags;
-	int			pad;
-	char		*prefix;
-};
 
 #endif

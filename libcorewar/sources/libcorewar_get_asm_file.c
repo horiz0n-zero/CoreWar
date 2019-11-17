@@ -6,77 +6,30 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:47:27 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/15 16:00:22 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/17 14:18:09 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libcorewar_get_asm_file.h"
-#include <stdio.h>
-
-void												print_opcode(struct s_libcorewar_opcode_get *const op)
-{
-	int												index;
-
-	index = 0;
-	if (op->label)
-		printf("%s: %s ", op->label, op->ref->name);
-	else
-		printf("%s ", op->ref->name);
-	while (index < op->ref->parameters)
-	{
-		if (op->parameters_type[index] == REG_CODE)
-			printf("r%hhu", (unsigned char)op->parameters[index]);
-		else if (op->parameters_type[index] == IND_CODE)
-			printf("%hu", (unsigned short)op->parameters[index]);
-		else
-		{
-			if (op->label)
-			{
-				if (op->parameters[index] < 0)
-					printf("%%:%s", op->parameters_labels[index]);
-				else	
-					printf("%%:%s", op->parameters_labels[index]);
-			}
-			else
-				printf("%%%u", op->parameters[index]);
-		}
-		if (++index < op->ref->parameters)
-			printf(", ");
-	}
-	printf("\n");
-	fflush(stdout);
-}
-
-void												print_opcodes(struct s_libcorewar_asm_file *const file)
-{
-	struct s_libcorewar_opcode_get					*op;
-
-	op = file->opcodes;
-	while (op)
-	{
-		print_opcode(op);
-		op = op->next;
-	}
-}
 
 static const struct s_libcorewar_ref_opcode_get		g_opcodes_get[256] =
 {
-	[0x01] = {"live",  1, 10,   0, 0, {T_DIR}},
-	[0x02] = {"ld",    2, 5,    1, 0, {T_DIR | T_IND, T_REG}},
-	[0x03] = {"st",    2, 5,    1, 0, {T_REG, T_IND | T_REG}},
-	[0x04] = {"add",   3, 10,   1, 0, {T_REG, T_REG, T_REG}},
-	[0x05] = {"sub",   3, 10,   1, 0, {T_REG, T_REG, T_REG}},
-	[0x06] = {"and",   3, 6,    1, 0, {T_REG | T_DIR | T_IND, T_REG | T_IND | T_DIR, T_REG}},
-	[0x07] = {"or",    3, 6,    1, 0, {T_REG | T_IND | T_DIR, T_REG | T_IND | T_DIR, T_REG}},
-	[0x08] = {"xor",   3, 6,    1, 0, {T_REG | T_IND | T_DIR, T_REG | T_IND | T_DIR, T_REG}},
-	[0x09] = {"zjmp",  1, 20,   0, 1, {T_DIR}},
-	[0x0a] = {"ldi",   3, 25,   1, 1, {T_REG | T_DIR | T_IND, T_DIR | T_REG, T_REG}},
-	[0x0b] = {"sti",   3, 25,   1, 1, {T_REG, T_REG | T_DIR | T_IND, T_DIR | T_REG}},
-	[0x0c] = {"fork",  1, 800,  0, 1, {T_DIR}},
-	[0x0d] = {"lld",   2, 10,   1, 0, {T_DIR | T_IND, T_REG}},
-	[0x0e] = {"lldi",  3, 50,   1, 1, {T_REG | T_DIR | T_IND, T_DIR | T_REG, T_REG}},
-	[0x0f] = {"lfork", 1, 1000, 0, 1, {T_DIR}},
-	[0x10] = {"aff",   1, 2,    1, 0, {T_REG}}
+	[0x01] = {"live",  1, 10,   0, 0, 0x01, 0, {T_DIR}},
+	[0x02] = {"ld",    2, 5,    1, 0, 0x02, 0, {T_DIR | T_IND, T_REG}},
+	[0x03] = {"st",    2, 5,    1, 0, 0x03, 0, {T_REG, T_IND | T_REG}},
+	[0x04] = {"add",   3, 10,   1, 0, 0x04, 0, {T_REG, T_REG, T_REG}},
+	[0x05] = {"sub",   3, 10,   1, 0, 0x05, 0, {T_REG, T_REG, T_REG}},
+	[0x06] = {"and",   3, 6,    1, 0, 0x06, 0, {T_REG | T_DIR | T_IND, T_REG | T_IND | T_DIR, T_REG}},
+	[0x07] = {"or",    3, 6,    1, 0, 0x07, 0, {T_REG | T_IND | T_DIR, T_REG | T_IND | T_DIR, T_REG}},
+	[0x08] = {"xor",   3, 6,    1, 0, 0x08, 0, {T_REG | T_IND | T_DIR, T_REG | T_IND | T_DIR, T_REG}},
+	[0x09] = {"zjmp",  1, 20,   0, 1, 0x09, 0, {T_DIR}},
+	[0x0a] = {"ldi",   3, 25,   1, 1, 0x0a, 0, {T_REG | T_DIR | T_IND, T_DIR | T_REG, T_REG}},
+	[0x0b] = {"sti",   3, 25,   1, 1, 0x0b, 0, {T_REG, T_REG | T_DIR | T_IND, T_DIR | T_REG}},
+	[0x0c] = {"fork",  1, 800,  0, 1, 0x0c, 0, {T_DIR}},
+	[0x0d] = {"lld",   2, 10,   1, 0, 0x0d, 0, {T_DIR | T_IND, T_REG}},
+	[0x0e] = {"lldi",  3, 50,   1, 1, 0x0e, 0, {T_REG | T_DIR | T_IND, T_DIR | T_REG, T_REG}},
+	[0x0f] = {"lfork", 1, 1000, 0, 1, 0x0f, 0, {T_DIR}},
+	[0x10] = {"aff",   1, 2,    1, 0, 0x10, 0, {T_REG}}
 };
 
 static const int									g_parameters_size[] =
@@ -107,7 +60,7 @@ static void											get_asm_file_resolve_labels(
 					if (target->start == (const char*)op->parameters_labels[index])
 					{
 						if (!target->label)
-							target->label = "label";
+							ft_asprintf(&target->label, "%s%d", file->labels_prefix, file->labels_count++);
 						op->parameters_labels[index] = target->label;
 						break;
 					}
@@ -129,12 +82,18 @@ static char											*get_asm_file_opcodes_direct(
 
 	if (opcode->ref->parameters_direct_small)
 	{
-		opcode->parameters[index] = (int)__builtin_bswap16(*(short*)content);
-		return (content - 2);
+		opcode->parameters[index] = (int)__builtin_bswap16(*(short*)content) & 0xFFFF;
+		addr = opcode->start + opcode->parameters[index];
+		content -= 2;
 	}
-	opcode->parameters[index] = __builtin_bswap32(*(int*)content);
-	addr = opcode->start + opcode->parameters[index];
-	if (addr >= (file->content + sizeof(struct s_asm_header)) && addr < file->content_end && g_opcodes_get[*addr].name)
+	else
+	{
+		opcode->parameters[index] = __builtin_bswap32(*(int*)content);
+		addr = opcode->start + opcode->parameters[index];
+	}
+	if (opcode->parameters[index] &&
+			addr >= (file->content + sizeof(struct s_asm_header)) && addr < file->content_end &&
+			g_opcodes_get[(int)*addr & 0xFF].name)
 		opcode->parameters_labels[index] = addr;
 	else
 		opcode->parameters_labels[index] = NULL;
@@ -198,11 +157,10 @@ static struct s_libcorewar_asm_file					*get_asm_file_opcodes(struct s_libcorewa
 			return (libcorewar_error("bad opcode", error, file, NULL));
 	}
 	get_asm_file_resolve_labels(file, error);
-	print_opcodes(file);
 	return (file);
 }
 
-struct s_libcorewar_asm_file						*libcorewar_get_asm_file(const char *const file, char **const error)
+struct s_libcorewar_asm_file						*libcorewar_get_asm_file(const char *const file, char **const error, const char *const prefix)
 {
 	const int										fd = open(file, O_RDONLY);
 	struct s_libcorewar_asm_file					*f;
@@ -225,5 +183,8 @@ struct s_libcorewar_asm_file						*libcorewar_get_asm_file(const char *const fil
 	//if ((off_t)f->header->prog_size != f->content_stat.st_size)
 	//	return (libcorewar_error("bad file size", error, f, NULL));
 	f->opcodes = NULL;
+	if (!(f->labels_prefix = prefix))
+		f->labels_prefix = "label_";
+	f->labels_count = 0;
 	return (get_asm_file_opcodes(f, error));
 }

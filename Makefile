@@ -6,11 +6,10 @@
 #    By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/15 09:22:08 by afeuerst          #+#    #+#              #
-#    Updated: 2019/11/15 12:53:47 by afeuerst         ###   ########.fr        #
+#    Updated: 2019/11/17 13:05:05 by afeuerst         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-FLAGS = -O0 -g
 COMPILER = $(shell xcrun --find clang)
 INCLUDES = /includes
 
@@ -30,6 +29,10 @@ ASM_HEADERS = $(shell find $(LIBCOREWAR_INC) -type f -name "*.h")
 LIBCOREWAR = libcorewar.a
 LIBCOREWAR_LOCATION = $(join $(join $(LIBCOREWAR_DIR), /), $(LIBCOREWAR))
 LIBCOREWAR_OBJECTS = $(LIBCOREWAR_SRC:.c=.o)
+LIBFT_PRINTF_INC = ./libcorewar/sources/libft_printf/includes/
+
+FLAGS = -O0 -g -Wno-initializer-overrides -I $(LIBCOREWAR_INC) -I $(LIBFT_PRINTF_INC)
+
 COREWAR = corewar
 ASM = asm
 
@@ -38,14 +41,14 @@ all: Makefile $(LIBCOREWAR_LOCATION) $(ASM) $(COREWAR)
 $(LIBCOREWAR_LOCATION): $(LIBCOREWAR_OBJECTS)
 	ar -rcs $(LIBCOREWAR_LOCATION) $(LIBCOREWAR_OBJECTS)
 
-%.o: %.c $(LIBCOREWAR_HEADERS)
-	clang -c $(FLAGS) -I $(LIBCOREWAR_INC) $< -o $@
+%.o: %.c $(LIBCOREWAR_HEADERS) $(LIBFT_PRINTF)
+	clang -c $(FLAGS) $< -o $@
 
 $(ASM): $(LIBCOREWAR_LOCATION) $(ASM_SRC)
-	clang -I $(LIBCOREWAR_INC) -I $(ASM_INC) $(FLAGS) $(LIBCOREWAR_LOCATION) $(ASM_SRC) -o $(ASM)
+	clang -I $(ASM_INC) $(FLAGS) $(LIBCOREWAR_LOCATION) $(ASM_SRC) -o $(ASM)
 
 $(COREWAR): $(LIBCOREWAR_LOCATION) $(COREWAR_SRC)
-	clang -I $(LIBCOREWAR_INC) -I $(COREWAR_INC) $(FLAGS) $(LIBCOREWAR_LOCATION) $(COREWAR_SRC) -o $(COREWAR)
+	clang -I $(COREWAR_INC) $(FLAGS) $(LIBCOREWAR_LOCATION) $(COREWAR_SRC) -o $(COREWAR)
 
 clean:
 	rm -rf $(LIBCOREWAR_OBJECTS)

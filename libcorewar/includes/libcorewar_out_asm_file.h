@@ -1,30 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   asm.h                                              :+:      :+:    :+:   */
+/*   libcorewar_out_asm_file.h                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 09:39:29 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 14:27:38 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/11/17 13:37:52 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/11/17 14:04:49 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ASM_H
-# define ASM_H
+#ifndef LIBCOREWAR_OUT_ASM_FILE_H
+# define LIBCOREWAR_OUT_ASM_FILE_H
 
 # include "libcorewar.h"
 
-# define FLAGS_D 1 << 0
-# define FLAGS_P 1 << 1
-# define FLAGS_H 1 << 2
-
-
-struct			s_asm
-{
-	int			flags;
-	int			pad;
-	char		*prefix;
-};
+static void		out_asm_file_opcode(const int fd, struct s_libcorewar_opcode_get *const op) __attribute__((always_inline));
+static void		out_asm_file_opcode_hexcolors(const int fd, struct s_libcorewar_opcode_get *const op) __attribute__((always_inline));
 
 #endif

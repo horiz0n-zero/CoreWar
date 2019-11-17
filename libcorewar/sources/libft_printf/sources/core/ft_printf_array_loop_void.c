@@ -1,30 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   asm.h                                              :+:      :+:    :+:   */
+/*   ft_printf_array_loop_void.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 09:39:29 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 14:27:38 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/11/08 09:26:59 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/11/08 10:12:41 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ASM_H
-# define ASM_H
+#include "ft_printf_array_loop_void.h"
 
-# include "libcorewar.h"
-
-# define FLAGS_D 1 << 0
-# define FLAGS_P 1 << 1
-# define FLAGS_H 1 << 2
-
-
-struct			s_asm
+size_t				ft_printf_array_loop_void_count(const char *src)
 {
-	int			flags;
-	int			pad;
-	char		*prefix;
-};
+	return (0);
+}
 
-#endif
+const char			*ft_printf_array_loop_void(struct s_printformat *const printformat, struct s_percent *const array, struct s_percent **const next, const char *src)
+{
+	*next = NULL;
+	ft_printf_core(printformat, array->format, &array->next);
+	return (NULL);
+}

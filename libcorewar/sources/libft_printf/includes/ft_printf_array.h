@@ -1,30 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   asm.h                                              :+:      :+:    :+:   */
+/*   ft_printf_array.h                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 09:39:29 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 14:27:38 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/10/29 13:15:27 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/11/03 13:48:46 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ASM_H
-# define ASM_H
+#ifndef FT_PRINFT_ARRAY
+# define FT_PRINFT_ARRAY
 
-# include "libcorewar.h"
+# include "libft_printf_internal.h"
 
-# define FLAGS_D 1 << 0
-# define FLAGS_P 1 << 1
-# define FLAGS_H 1 << 2
-
-
-struct			s_asm
-{
-	int			flags;
-	int			pad;
-	char		*prefix;
-};
+static const char	*ft_printf_array_prepare_flags(struct s_printformat *const printformat, const char *format, struct s_percent *const percent) __attribute__((always_inline));
 
 #endif
