@@ -52,8 +52,14 @@ $(COREWAR): $(LIBCOREWAR_LOCATION) $(COREWAR_SRC)
 
 clean:
 	rm -rf $(LIBCOREWAR_OBJECTS)
+	xcodebuild clean -project ./app/Corewar/Corewar.xcodeproj
 
 fclean: clean
 	rm -f $(LIBCOREWAR_LOCATION) $(ASM) $(COREWAR)
+	rm -rf Corewar.app
 
 re: fclean all
+
+bonus: $(LIBCOREWAR_LOCATION)
+	xcodebuild -project ./app/Corewar/Corewar.xcodeproj
+	cp -r app/Corewar/build/Release/Corewar.app .
