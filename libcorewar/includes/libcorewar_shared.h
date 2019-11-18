@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:06:07 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 13:04:44 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/18 15:37:37 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,10 @@ char		**arguments_get(char **argv, const struct s_argument *const arguments, int
 
 size_t		ft_strlen(const char *const src);
 int			ft_strcmp(const char *s1, const char *s2);
+void		*ft_memalloc(const size_t size);
+void		*ft_memcopy(const char *src, size_t length);
+char		*ft_static_world(char *content, char *const content_end, const int *const source, int *const length);
+char		*ft_world(char *content, char *const content_end, const int *const source);
+
 
 #endif

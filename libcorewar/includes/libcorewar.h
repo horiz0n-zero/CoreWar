@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:05:14 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 14:34:40 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/18 15:46:16 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ struct										s_libcorewar_ref_opcode_get
 
 typedef struct s_libcorewar_opcode_get		t_libcorewar_opcode_get;
 typedef struct s_libcorewar_asm_file		t_libcorewar_asm_file;
+typedef struct s_libcorewar_opcode_src		t_libcorewar_opcode_src;
 
 struct										s_libcorewar_opcode_get
 {
@@ -113,9 +114,24 @@ struct										s_libcorewar_asm_file // source is .cor
 	struct s_libcorewar_opcode_get			*opcodes;
 };
 
-/* ************************************************************************** */
-struct s_libcorewar_asm_file	*libcorewar_get_asm_file(const char *const file, char **const error, const char *const prefix);
+struct										s_libcorewar_opcode_src
+{
+	char									*label;
+	struct s_libcorewar_opcode_src			*next;
+};
 
+struct										s_libcorewar_src_file
+{
+	struct stat								content_stat;
+	char									*content;
+	char									*content_end;
+	struct s_asm_header						header;
+	struct s_libcorewar_opcode_src			*opcodes;
+};
+
+/* ************************************************************************** */
+struct s_libcorewar_asm_file	*libcorewar_get_asm_file(const char *const named, char **const error, const char *const prefix);
+struct s_libcorewar_src_file	*libcorewar_get_src_file(const char *const named, char **const error);
 
 // print out
 void							libcorewar_out_asm_file(const int fd, struct s_libcorewar_asm_file *const file);

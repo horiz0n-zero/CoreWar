@@ -1,20 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libcorewar_get_asm_file.h                          :+:      :+:    :+:   */
+/*   ft_memalloc.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 11:45:34 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/18 08:52:26 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/11/18 15:20:50 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/11/18 15:27:57 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBCOREWAR_GET_ASM_FILE_H
-# define LIBCOREWAR_GET_ASM_FILE_H
+#include "libcorewar.h"
 
-# include "libcorewar.h"
+void			*ft_memalloc(const size_t size)
+{
+	char *const	ptr = malloc(size);
+	size_t		index;
 
-static struct s_libcorewar_asm_file	*get_asm_file_opcodes(struct s_libcorewar_asm_file *const file, char **const error) __attribute__((always_inline));
-
-#endif
+	if (ptr)
+	{
+		index = 0;
+		while (index < size)
+			*(ptr + index++) = 0;
+	}
+	return (ptr);
+}

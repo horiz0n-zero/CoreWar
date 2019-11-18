@@ -1,20 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libcorewar_get_asm_file.h                          :+:      :+:    :+:   */
+/*   libcorewar_states_unexpected.c                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 11:45:34 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/18 08:52:26 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/11/18 09:40:35 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/11/18 09:51:27 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBCOREWAR_GET_ASM_FILE_H
-# define LIBCOREWAR_GET_ASM_FILE_H
+#include "libcorewar_get_src_file.h"
 
-# include "libcorewar.h"
-
-static struct s_libcorewar_asm_file	*get_asm_file_opcodes(struct s_libcorewar_asm_file *const file, char **const error) __attribute__((always_inline));
-
-#endif
+char		*libcorewar_state_unexpected(struct s_libcorewar_src_file *const file, char *content, int *const state, char **const error)
+{
+	if (*state == STATE_HEADER)
+		ft_asprintf(error, "unexpected character found in header : %c", *content);
+	else
+		ft_asprintf(error, "unexpected character found : %c", *content);
+	return (content);
+}

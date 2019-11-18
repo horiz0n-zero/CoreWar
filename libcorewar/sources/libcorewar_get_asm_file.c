@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:47:27 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 14:18:09 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/18 09:00:21 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,31 +160,31 @@ static struct s_libcorewar_asm_file					*get_asm_file_opcodes(struct s_libcorewa
 	return (file);
 }
 
-struct s_libcorewar_asm_file						*libcorewar_get_asm_file(const char *const file, char **const error, const char *const prefix)
+struct s_libcorewar_asm_file						*libcorewar_get_asm_file(const char *const named, char **const error, const char *const prefix)
 {
-	const int										fd = open(file, O_RDONLY);
-	struct s_libcorewar_asm_file					*f;
+	const int										fd = open(named, O_RDONLY);
+	struct s_libcorewar_asm_file					*file;
    
-	if (!(f = malloc(sizeof(struct s_libcorewar_asm_file))))
+	if (!(file = malloc(sizeof(struct s_libcorewar_asm_file))))
 		return (libcorewar_error("cannot allocate", error, NULL));
 	if (fd < 0)
-		return (libcorewar_error("cannot open", error, f, NULL));
-	if (fstat(fd, &f->content_stat) < 0)
-		return (libcorewar_error("cannot fstat", error, f, NULL));
-	if ((f->content = mmap(NULL, f->content_stat.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-		return (libcorewar_error("cannot mmap", error, f, NULL));
-	f->content_end = f->content + f->content_stat.st_size;
-	if (f->content_stat.st_size < sizeof(int))
-		return (libcorewar_error("file to small for checking magic number", error, f, NULL));
-	f->header = (void*)f->content;
+		return (libcorewar_error("cannot open", error, file, NULL));
+	if (fstat(fd, &file->content_stat) < 0)
+		return (libcorewar_error("cannot fstat", error, file, NULL));
+	if ((file->content = mmap(NULL, file->content_stat.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+		return (libcorewar_error("cannot mmap", error, file, NULL));
+	file->content_end = file->content + file->content_stat.st_size;
+	if (file->content_stat.st_size < sizeof(int))
+		return (libcorewar_error("file to small for checking magic number", error, file, NULL));
+	file->header = (void*)file->content;
 	//f->header->magic = __builtin_bswap32(f->header->magic);
-	if (__builtin_bswap32(f->header->magic) != COREWAR_EXEC_MAGIC)
-		return (libcorewar_error("bad magic number", error, f, NULL));
+	if (__builtin_bswap32(file->header->magic) != COREWAR_EXEC_MAGIC)
+		return (libcorewar_error("bad magic number", error, file, NULL));
 	//if ((off_t)f->header->prog_size != f->content_stat.st_size)
 	//	return (libcorewar_error("bad file size", error, f, NULL));
-	f->opcodes = NULL;
-	if (!(f->labels_prefix = prefix))
-		f->labels_prefix = "label_";
-	f->labels_count = 0;
-	return (get_asm_file_opcodes(f, error));
+	file->opcodes = NULL;
+	if (!(file->labels_prefix = prefix))
+		file->labels_prefix = "label_";
+	file->labels_count = 0;
+	return (get_asm_file_opcodes(file, error));
 }

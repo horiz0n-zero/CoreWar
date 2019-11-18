@@ -1,20 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libcorewar_get_asm_file.h                          :+:      :+:    :+:   */
+/*   ft_memcopy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 11:45:34 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/18 08:52:26 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/11/18 15:35:17 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/11/18 15:59:06 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBCOREWAR_GET_ASM_FILE_H
-# define LIBCOREWAR_GET_ASM_FILE_H
+#include "libcorewar.h"
 
-# include "libcorewar.h"
+void			*ft_memcopy(const char *src, size_t len)
+{
+	char *const	ptr = malloc(len + 1);
+	size_t		index;
 
-static struct s_libcorewar_asm_file	*get_asm_file_opcodes(struct s_libcorewar_asm_file *const file, char **const error) __attribute__((always_inline));
-
-#endif
+	if (ptr)
+	{
+		index = 0;
+		while (index < len)
+		{
+			*(ptr + index) = *(src + index);
+			++index;
+		}
+		*(ptr + index) = 0;
+	}
+	return (ptr);
+}
