@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:45:34 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/18 14:26:16 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/19 16:19:45 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define LIBCOREWAR_GET_SRC_FILE_H
 
 # include "libcorewar.h"
+# include <limits.h>
 
 typedef char	*(*t_state_func)(struct s_libcorewar_src_file *const file, char *content, int *const state, char **const error);
 
@@ -22,7 +23,9 @@ typedef char	*(*t_state_func)(struct s_libcorewar_src_file *const file, char *co
 
 
 char			*libcorewar_state_comment(struct s_libcorewar_src_file *const file, char *content, int *const state, char **const error);
+char			*libcorewar_state_numbers(struct s_libcorewar_src_file *const file, char *content, int *const state, char **const error);
 char			*libcorewar_state_whitespace(struct s_libcorewar_src_file *const file, char *content, int *const state, char **const error);
+char			*libcorewar_state_virguspace(struct s_libcorewar_src_file *const file, char *content, int *const state, char **const error);
 char			*libcorewar_state_unexpected(struct s_libcorewar_src_file *const file, char *content, int *const state, char **const error);
 char			*libcorewar_state_head_point(struct s_libcorewar_src_file *const file, char *content, int *const state, char **const error);
 struct			s_libcorewar_head_point

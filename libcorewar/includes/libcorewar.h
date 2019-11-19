@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:05:14 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/18 15:46:16 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/19 14:26:34 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,22 +28,18 @@
 # define T_IND 4
 # define T_LAB 8
 
-
-# define MAX_ARGS_NUMBER 4
-# define MAX_PLAYERS 4
-# define MEM_SIZE (4 * 1024)
-# define IDX_MOD (MEM_SIZE / 8)
-# define CHAMP_MAX_SIZE (MEM_SIZE / 6)
-
 # define COMMENT_CHAR '#'
 # define LABEL_CHAR ':'
 # define DIRECT_CHAR '%'
+# define REG_CHAR 'r'
 # define SEPARATOR_CHAR ','
 
 # define LABEL_CHARS "abcdefghijklmnopqrstuvwxyz_0123456789"
 
 # define NAME_CMD_STRING ".name"
+# define PROG_NAME_LENGTH (128)
 # define COMMENT_CMD_STRING ".comment"
+# define COMMENT_LENGTH (2048)
 
 # define REG_NUMBER 16
 
@@ -51,12 +47,12 @@
 # define CYCLE_DELTA 50
 # define NBR_LIVE 21
 # define MAX_CHECKS 10
+# define MAX_ARGS_NUMBER 4
+# define MAX_PLAYERS 4
+# define MEM_SIZE (4 * 1024)
+# define IDX_MOD (MEM_SIZE / 8)
+# define CHAMP_MAX_SIZE (MEM_SIZE / 6)
 
-typedef char	t_arg_type;
-
-
-# define PROG_NAME_LENGTH (128)
-# define COMMENT_LENGTH (2048)
 # define COREWAR_EXEC_MAGIC 0xea83f3
 
 typedef struct								s_asm_header
@@ -117,6 +113,9 @@ struct										s_libcorewar_asm_file // source is .cor
 struct										s_libcorewar_opcode_src
 {
 	char									*label;
+	const t_libcorewar_ref_opcode_get		*ref;
+	int										parameters[MAX_ARGS_NUMBER];
+	char									*parameters_labels[MAX_ARGS_NUMBER];
 	struct s_libcorewar_opcode_src			*next;
 };
 

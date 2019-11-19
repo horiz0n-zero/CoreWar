@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 14:24:08 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/18 15:59:38 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/19 16:43:21 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,145 @@ static const struct s_libcorewar_ref_opcode_get	g_opcodes_get[256] =
 	[0x3e] = {"aff",   1, 2,    1, 0, 0x10, 0, {T_REG}}
 };
 
+static const struct s_libcorewar_ref_opcode_get	*g_ref = NULL;
+static struct s_libcorewar_src_file				*g_file = NULL;
+
+static void										state_add_opcode(
+		struct s_libcorewar_src_file *const file,
+		struct s_libcorewar_opcode_src *const op)
+{
+	static struct s_libcorewar_opcode_src		*last = NULL;
+
+	if (!file->opcodes)
+	{
+		last = NULL;
+		file->opcodes = op;
+		last = op;
+	}
+	else
+	{
+		last->next = op;
+		last = op;
+	}
+}
+
+static char										*state_opcode_indirect(
+		struct s_libcorewar_opcode_src *const op,
+		char *content, char **const error, const int index)
+{
+	static const int							dirs_minmax[2] = {SHRT_MIN, SHRT_MAX};
+	t_src_number								func;
+
+	if (!(op->ref->parameters_type[index] & T_IND))
+	{
+		*error = "cannot be a ind";
+		return (content);
+	}
+	if (*content == '-' && ++content)
+		func = ft_src_number;
+	else
+		func = ft_src_unumber;
+	if (*content >= '0' && *content <= '9')
+	{
+		op->parameters[index] = func(content, dirs_minmax, error);
+		content = libcorewar_state_numbers(NULL, content, NULL, error);
+	}
+	else
+		*error = "illegal char in parameter";
+	return (content);
+}
+
+static char										*state_opcode_reg(
+		struct s_libcorewar_opcode_src *const op,
+		char *content, char **const error, const int index)
+{
+	static const int							reg_minmax[2] = {1, REG_NUMBER};
+
+	if (!(op->ref->parameters_type[index] & T_REG))
+		*error = "waiting for a reg";
+	else if (*content == '-')
+		*error = "non negative register allowed";
+	else
+	{
+		if (*content >= '0' && *content <= '9')
+		{
+			op->parameters[index] = ft_src_unumber(content, reg_minmax, error);
+			content = libcorewar_state_numbers(NULL, content, NULL, error);
+		}
+		else
+			*error = "register must be a number";
+	}
+	return (content);
+}
+
+static char										*state_opcode_direct(
+		struct s_libcorewar_opcode_src *const op,
+		char *content, char **const error, const int index)
+{
+	static const int							dir_minmax[2] = {INT_MIN, INT_MAX};
+	static const int							dirs_minmax[2] = {SHRT_MIN, SHRT_MAX};
+	t_src_number								func;
+	int											length;
+
+	if (!(op->ref->parameters_type[index] & T_DIR))
+		*error = "waiting for a dir";
+	else if (*content == ':')
+	{
+		if (!g_opcodes_chars[*++content])
+			*error = "bad formatted label";
+		else
+		{
+			op->parameters_labels[index] = ft_memcopy(ft_static_world(content, g_file->content_end, g_opcodes_chars, &length), length);
+			content += length;
+		}
+	}
+	else
+	{
+		if (*content == '-' && ++content)
+			func = ft_src_number;
+		else
+			func = ft_src_unumber;
+		if (*content >= '0' && *content <= '9')
+		{
+			if (op->ref->parameters_direct_small)
+				op->parameters[index] = func(content, dirs_minmax, error);
+			else
+				op->parameters[index] = func(content, dir_minmax, error);
+			content = libcorewar_state_numbers(NULL, content, NULL, error);
+		}
+		else
+			*error = "dir not a ";
+	}
+	return (content);
+}
+
 static char										*state_opcode_parameter(
 		struct s_libcorewar_src_file *const file,
-		const struct s_libcorewar_ref_opcode_get *const ref,
+		struct s_libcorewar_opcode_src *const op,
 		char *content, char **const error)
 {
-	ft_printf("%s\n", ref->name);
-	while (content < file->content_end && *content != '\n')
-		++content;
-	if (*content == '\n')
-		++content;
+	int											index;
+
+	index = 0;
+	op->ref = g_ref;
+	while (!*error && index < g_ref->parameters)
+	{
+		if (!index)
+			content = libcorewar_state_whitespace(file, content, NULL, error);
+		else
+			content = libcorewar_state_virguspace(file, content, NULL, error);
+		if (*content == DIRECT_CHAR)
+			content = state_opcode_direct(op, ++content, error, index);
+		else if (*content >= '0' && *content <= '9')
+			content = state_opcode_indirect(op, content, error, index);
+		else if (*content == REG_CHAR)
+			content = state_opcode_reg(op, ++content, error, index);
+		else
+			ft_asprintf(error, "bad parameters for %s", op->ref->name);
+		++index;
+	}
+	if (!*error)
+		state_add_opcode(file, op);
 	return (content);
 }
 
@@ -60,33 +189,20 @@ char											*libcorewar_state_opcode(
 	char										*world;
 	struct s_libcorewar_opcode_src				*op;
 	unsigned char								hash;
-	const t_libcorewar_ref_opcode_get			*ref;
 
+	g_file = file;
 	world = ft_static_world(content, file->content_end, g_opcodes_chars, &length);
 	if (!(op = ft_memalloc(sizeof(struct s_libcorewar_opcode_src))))
 		return (libcorewar_error("cannot allocate", error, NULL));
-	if (*(content + length) == ':')
+	if (*(content + length) == LABEL_CHAR)
 	{
 		op->label = ft_memcopy(content, length + 1);
 		content = libcorewar_state_whitespace(file, content += length + 1, state, error);
 		world = ft_static_world(content, file->content_end, g_opcodes_chars, &length);
 	}
 	hash = ft_hash_src(world, (size_t)length);
-	if (!(ref = g_opcodes_get + hash)->name || ft_strcmp(ref->name, world))
+	if (!(g_ref = g_opcodes_get + hash)->name || ft_strcmp(g_ref->name, world))
 		return (libcorewar_error("unknow opcode", error, NULL));
 	content += length;
-	return (state_opcode_parameter(file, ref, content, error));
+	return (state_opcode_parameter(file, op, content, error));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
