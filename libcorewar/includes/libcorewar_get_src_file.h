@@ -41,4 +41,8 @@ struct			s_libcorewar_head_point
 char			*libcorewar_state_opcode(struct s_libcorewar_src_file *const file, char *content, int *const state, char **const error);
 
 
+# define OE1 ""
+void			op_err(const char *const format, 
+
+
 #endif

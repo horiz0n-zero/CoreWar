@@ -21,6 +21,6 @@ int		ft_printf(const char *const format, ...);
 int		ft_dprintf(const int fd, const char *const format, ...);
 int		ft_asprintf(char **const ret, const char *const format, ...);
 
-
+int		ft_vasprintf(char **const ret, const char *const format, va_list args);
 
 #endif

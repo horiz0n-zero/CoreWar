@@ -115,6 +115,7 @@ struct										s_libcorewar_opcode_src
 	char									*label;
 	const t_libcorewar_ref_opcode_get		*ref;
 	int										parameters[MAX_ARGS_NUMBER];
+	int										parameters_type[MAX_ARGS_NUMBER];
 	char									*parameters_labels[MAX_ARGS_NUMBER];
 	struct s_libcorewar_opcode_src			*next;
 };

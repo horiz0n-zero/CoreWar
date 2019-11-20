@@ -35,6 +35,43 @@ static const char					*g_usages[] =
 	NULL
 };
 
+static void							print_src_file(struct s_libcorewar_src_file *const file)
+{
+	struct s_libcorewar_opcode_src	*op;
+	int								index;
+	static const char				*params[] =
+	{
+		[T_DIR] = "direct(%d)",
+		[T_IND] = "indirect(%d)",
+		[T_REG] = "r%d"
+	};
+
+	ft_printf("%s %s\n", file->header.prog_name, file->header.comment);
+	op = file->opcodes;
+	while (op)
+	{
+		if (op->label)
+			ft_printf("%s:\t%s", op->label, op->ref->name);
+		else
+			ft_printf("\t\t%s", op->ref->name);
+		index = 0;
+		while (index < op->ref->parameters)
+		{
+			if (!index)
+				ft_printf(" ");
+			else
+				ft_printf(", ");
+			if (op->parameters_labels[index])
+				ft_printf("%c:%s", '%', op->parameters_labels[index]);
+			else
+				ft_printf(params[op->parameters_type[index]], op->parameters[index]); 
+			++index;
+		}
+		ft_printf("\n");
+		op = op->next;
+	}
+}
+
 static void							compiler_process_file(const char *const named)
 {
 	struct s_libcorewar_asm_file	*asmfile;
@@ -55,6 +92,8 @@ static void							compiler_process_file(const char *const named)
 	{
 		if (!(srcfile = libcorewar_get_src_file(named, &error)))
 			ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error);
+		else
+			print_src_file(srcfile);
 	}
 }
 

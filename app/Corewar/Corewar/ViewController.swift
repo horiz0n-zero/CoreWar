@@ -20,7 +20,7 @@ class Libcorewar: NSObject {
         }
     }
     
-    func getSrc(named name: String) throws -> s_libcorewar_src_file {
+    class func getSrc(named name: String) throws -> s_libcorewar_src_file {
         var error: UnsafeMutablePointer<Int8>? = nil
         let named = name.cString(using: .utf8)!
         let srcFile: UnsafeMutablePointer<s_libcorewar_src_file>? = libcorewar_get_src_file(named, &error)
@@ -37,6 +37,8 @@ class ViewController: NSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let _ = try! Libcorewar.getSrc(named: "lol.cor")
+        
         
     }
 

@@ -68,6 +68,7 @@ static char										*state_opcode_indirect(
 	static const int							dirs_minmax[2] = {SHRT_MIN, SHRT_MAX};
 	t_src_number								func;
 
+	op->parameters_type[index] = T_IND;
 	if (!(op->ref->parameters_type[index] & T_IND))
 	{
 		*error = "cannot be a ind";
@@ -93,6 +94,7 @@ static char										*state_opcode_reg(
 {
 	static const int							reg_minmax[2] = {1, REG_NUMBER};
 
+	op->parameters_type[index] = T_REG;
 	if (!(op->ref->parameters_type[index] & T_REG))
 		*error = "waiting for a reg";
 	else if (*content == '-')
@@ -119,6 +121,7 @@ static char										*state_opcode_direct(
 	t_src_number								func;
 	int											length;
 
+	op->parameters_type[index] = T_DIR;
 	if (!(op->ref->parameters_type[index] & T_DIR))
 		*error = "waiting for a dir";
 	else if (*content == ':')
@@ -196,7 +199,7 @@ char											*libcorewar_state_opcode(
 		return (libcorewar_error("cannot allocate", error, NULL));
 	if (*(content + length) == LABEL_CHAR)
 	{
-		op->label = ft_memcopy(content, length + 1);
+		op->label = ft_memcopy(content, length);
 		content = libcorewar_state_whitespace(file, content += length + 1, state, error);
 		world = ft_static_world(content, file->content_end, g_opcodes_chars, &length);
 	}
