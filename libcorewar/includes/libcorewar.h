@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:05:14 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/19 14:26:34 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/22 13:35:10 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@
 # define CHAMP_MAX_SIZE (MEM_SIZE / 6)
 
 # define COREWAR_EXEC_MAGIC 0xea83f3
+# define MAX_OPCODE_SIZE (2 + MAX_ARGS_NUMBER * DIR_SIZE)
 
 typedef struct								s_asm_header
 {
@@ -127,6 +128,7 @@ struct										s_libcorewar_src_file
 	char									*content_end;
 	struct s_asm_header						header;
 	struct s_libcorewar_opcode_src			*opcodes;
+	size_t									opcodes_count;
 };
 
 /* ************************************************************************** */
@@ -136,6 +138,7 @@ struct s_libcorewar_src_file	*libcorewar_get_src_file(const char *const named, c
 // print out
 void							libcorewar_out_asm_file(const int fd, struct s_libcorewar_asm_file *const file);
 void							libcorewar_out_asm_file_hexcolors(const int fd, struct s_libcorewar_asm_file *const file);
+void							libcorewar_out_src_file(const int fd, struct s_libcorewar_src_file *const file, char **const error);
 
 // special
 void							*libcorewar_error(char *const ptr, char **const error_ptr, ...);

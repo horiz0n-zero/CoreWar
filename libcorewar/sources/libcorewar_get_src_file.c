@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:47:27 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/18 15:24:22 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/22 13:15:38 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ static const t_state_func							g_state_header[256] =
 	[' '] = libcorewar_state_whitespace,
 	['\t'] = libcorewar_state_whitespace,
 	['\n'] = libcorewar_state_whitespace,
-	['#'] = libcorewar_state_comment
+	['#'] = libcorewar_state_comment,
+	[';'] = libcorewar_state_comment
 };
 
 static const t_state_func							g_state_opcode[256] =
@@ -29,6 +30,7 @@ static const t_state_func							g_state_opcode[256] =
 	['\t'] = libcorewar_state_whitespace,
 	['\n'] = libcorewar_state_whitespace,
 	['#'] = libcorewar_state_comment,
+	[';'] = libcorewar_state_comment,
 	['a' ... 'z'] = libcorewar_state_opcode,
 	['0' ... '9'] = libcorewar_state_opcode,
 	['_'] = libcorewar_state_opcode
@@ -62,15 +64,16 @@ struct s_libcorewar_src_file						*libcorewar_get_src_file(const char *const nam
 	struct s_libcorewar_src_file					*file;
 
 	if (!(file = ft_memalloc(sizeof(struct s_libcorewar_src_file))))
-		return (libcorewar_error("cannot allocate", error, NULL));
+		return (strerror_null(error));
 	if (fd < 0)
-		return (libcorewar_error("cannot open", error, file, NULL));
+		return (strerror_null(error));
 	if (fstat(fd, &file->content_stat) < 0)
-		return (libcorewar_error("cannot fstat", error, file, NULL));
+		return (strerror_null(error));
 	if ((file->content = mmap(NULL, file->content_stat.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-		return (libcorewar_error("cannot mmap", error, file, NULL));
+		return (strerror_null(error));
 	file->content_end = file->content + file->content_stat.st_size;
 	libcorewar_get_src_loop(file, error);
+	close(fd);
 	if (*error)
 		return (NULL);
 	return (file);

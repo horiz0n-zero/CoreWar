@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:06:07 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/19 14:59:35 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/22 11:52:14 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # include <sys/stat.h>
 # include <sys/mman.h>
 # include <fcntl.h>
+# include <string.h>
+# include <sys/errno.h>
 # include "libft_printf.h"
 
 struct								s_argument
@@ -39,13 +41,13 @@ unsigned char	ft_hash_src(const char *src, size_t size);
 char			*ft_static_world(char *content, char *const content_end, const int *const source, int *const length);
 char			*ft_world(char *content, char *const content_end, const int *const source);
 
-unsigned int	high_tone(unsigned int n);
-int				multi_issafe(int lhs, int rhs);
-int				add_issafe(int lhs, int rhs);
-int				ft_src_unumber(const char *src, const int *const minmax, char **const error);
-int				ft_src_number(const char *src, const int *const minmax, char **const error);
-typedef int		(*t_src_number)(const char *src, const int *const minmax, char **const error);
+void			*strerror_null(char **const error);
+void			*strerror_para(char **const error, void *const para);
+void			strerror_void(char **const error);
 
+unsigned int	high_tone(unsigned int n) __attribute__((const));
+int				multi_issafe(int lhs, int rhs) __attribute__((const));
+int				add_issafe(int lhs, int rhs) __attribute__((const));
 
 
 #endif

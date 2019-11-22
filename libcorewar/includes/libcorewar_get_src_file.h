@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:45:34 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/19 16:19:45 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/20 15:45:02 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,19 @@ struct			s_libcorewar_head_point
 	size_t		getted;
 	size_t		file_offset;
 	size_t		file_length;
+	int			mustbefill;
+	int			pad;
 };
 # define GETTED_NAME 1 << 0
 # define GETTED_COMM 1 << 1
 # define GETTED_ALL (GETTED_NAME | GETTED_COMM)
 char			*libcorewar_state_opcode(struct s_libcorewar_src_file *const file, char *content, int *const state, char **const error);
 
+int				ft_src_unumber(struct s_libcorewar_src_file *const file, const char *src, const int *const minmax, char **const error);
+int				ft_src_number(struct s_libcorewar_src_file *const file, const char *src, const int *const minmax, char **const error);
+typedef int		(*t_src_number)(struct s_libcorewar_src_file *const file, const char *src, const int *const minmax, char **const error);
 
-# define OE1 ""
-void			op_err(const char *const format, 
-
+void			oe(struct s_libcorewar_src_file *const file, char *const content, const int index, char **const error, ...);
+void			oeh(struct s_libcorewar_src_file *const file, char *const content, const int index, char **const error, ...);
 
 #endif

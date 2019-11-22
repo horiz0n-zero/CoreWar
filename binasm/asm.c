@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 09:39:48 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/18 10:00:41 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/22 13:15:40 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static void							print_src_file(struct s_libcorewar_src_file *const file)
 	while (op)
 	{
 		if (op->label)
-			ft_printf("%s:\t%s", op->label, op->ref->name);
+			ft_printf("\n%s:\t%s", op->label, op->ref->name);
 		else
 			ft_printf("\t\t%s", op->ref->name);
 		index = 0;
@@ -72,12 +72,32 @@ static void							print_src_file(struct s_libcorewar_src_file *const file)
 	}
 }
 
+static void							compiler_compile_file(const char *const named)
+{
+	struct s_libcorewar_src_file	*file;
+	int								fd;
+	char							*error;
+
+	error = NULL;
+	if (!(file = libcorewar_get_src_file(named, &error)))
+		ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error);
+	else
+	{
+		if ((fd = open("a.cor", ASMFILE_FLAG, ASMFILE_MODE)) < 0)
+			return ((void)ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, strerror(errno)));
+		libcorewar_out_src_file(fd, file, &error);
+		if (error)
+			ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error);
+		close(fd);
+	}
+}
+
 static void							compiler_process_file(const char *const named)
 {
 	struct s_libcorewar_asm_file	*asmfile;
-	struct s_libcorewar_src_file	*srcfile;
 	char							*error;
 
+	error = NULL;
 	if (g_compiler.flags & FLAGS_D)
 	{
 		if ((asmfile = libcorewar_get_asm_file(named, &error, g_compiler.prefix)))
@@ -89,12 +109,7 @@ static void							compiler_process_file(const char *const named)
 			ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error);
 	}
 	else
-	{
-		if (!(srcfile = libcorewar_get_src_file(named, &error)))
-			ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error);
-		else
-			print_src_file(srcfile);
-	}
+		compiler_compile_file(named);
 }
 
 int									main(int argc, char **argv)

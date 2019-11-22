@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 14:24:08 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/19 16:43:21 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/22 13:56:53 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static const struct s_libcorewar_ref_opcode_get	g_opcodes_get[256] =
 {
 	[0x6d] = {"live",  1, 10,   0, 0, 0x01, 0, {T_DIR}},
 	[0xb4] = {"ld",    2, 5,    1, 0, 0x02, 0, {T_DIR | T_IND, T_REG}},
-	[0x9a] = {"st",    2, 5,    1, 0, 0x03, 0, {T_REG, T_IND | T_REG}},
+	[0x9a] = {"st",    2, 5,    1, 0, 0x03, 0, {T_REG, T_DIR | T_IND | T_REG}},
 	[0x38] = {"add",   3, 10,   1, 0, 0x04, 0, {T_REG, T_REG, T_REG}},
 	[0x54] = {"sub",   3, 10,   1, 0, 0x05, 0, {T_REG, T_REG, T_REG}},
 	[0x2c] = {"and",   3, 6,    1, 0, 0x06, 0, {T_REG | T_DIR | T_IND, T_REG | T_IND | T_DIR, T_REG}},
@@ -59,9 +59,11 @@ static void										state_add_opcode(
 		last->next = op;
 		last = op;
 	}
+	++file->opcodes_count;
 }
 
 static char										*state_opcode_indirect(
+		struct s_libcorewar_src_file *const file,
 		struct s_libcorewar_opcode_src *const op,
 		char *content, char **const error, const int index)
 {
@@ -71,7 +73,7 @@ static char										*state_opcode_indirect(
 	op->parameters_type[index] = T_IND;
 	if (!(op->ref->parameters_type[index] & T_IND))
 	{
-		*error = "cannot be a ind";
+		oe(file, content, 1, error, index, op->ref->name);
 		return (content);
 	}
 	if (*content == '-' && ++content)
@@ -80,15 +82,16 @@ static char										*state_opcode_indirect(
 		func = ft_src_unumber;
 	if (*content >= '0' && *content <= '9')
 	{
-		op->parameters[index] = func(content, dirs_minmax, error);
+		op->parameters[index] = func(file, content, dirs_minmax, error);
 		content = libcorewar_state_numbers(NULL, content, NULL, error);
 	}
 	else
-		*error = "illegal char in parameter";
+		oe(file, content, 0, error, *content, op->ref->name);
 	return (content);
 }
 
 static char										*state_opcode_reg(
+		struct s_libcorewar_src_file *const file,
 		struct s_libcorewar_opcode_src *const op,
 		char *content, char **const error, const int index)
 {
@@ -96,23 +99,24 @@ static char										*state_opcode_reg(
 
 	op->parameters_type[index] = T_REG;
 	if (!(op->ref->parameters_type[index] & T_REG))
-		*error = "waiting for a reg";
+		oe(file, content, 2, error, index, op->ref->name);
 	else if (*content == '-')
-		*error = "non negative register allowed";
+		oe(file, content, 3, error, index, op->ref->name, reg_minmax[0], reg_minmax[1]);
 	else
 	{
 		if (*content >= '0' && *content <= '9')
 		{
-			op->parameters[index] = ft_src_unumber(content, reg_minmax, error);
+			op->parameters[index] = ft_src_unumber(file, content, reg_minmax, error);
 			content = libcorewar_state_numbers(NULL, content, NULL, error);
 		}
 		else
-			*error = "register must be a number";
+			oe(file, content, 4, error, index, op->ref->name, reg_minmax[0], reg_minmax[1], *content);
 	}
 	return (content);
 }
 
 static char										*state_opcode_direct(
+		struct s_libcorewar_src_file *const file,
 		struct s_libcorewar_opcode_src *const op,
 		char *content, char **const error, const int index)
 {
@@ -123,11 +127,11 @@ static char										*state_opcode_direct(
 
 	op->parameters_type[index] = T_DIR;
 	if (!(op->ref->parameters_type[index] & T_DIR))
-		*error = "waiting for a dir";
+		oe(file, content, 5, error, index, op->ref->name);
 	else if (*content == ':')
 	{
 		if (!g_opcodes_chars[*++content])
-			*error = "bad formatted label";
+			oe(file, content, 6, error);
 		else
 		{
 			op->parameters_labels[index] = ft_memcopy(ft_static_world(content, g_file->content_end, g_opcodes_chars, &length), length);
@@ -143,13 +147,13 @@ static char										*state_opcode_direct(
 		if (*content >= '0' && *content <= '9')
 		{
 			if (op->ref->parameters_direct_small)
-				op->parameters[index] = func(content, dirs_minmax, error);
+				op->parameters[index] = func(file, content, dirs_minmax, error);
 			else
-				op->parameters[index] = func(content, dir_minmax, error);
+				op->parameters[index] = func(file, content, dir_minmax, error);
 			content = libcorewar_state_numbers(NULL, content, NULL, error);
 		}
 		else
-			*error = "dir not a ";
+			oe(file, content, 7, error, op->ref->name);
 	}
 	return (content);
 }
@@ -170,13 +174,15 @@ static char										*state_opcode_parameter(
 		else
 			content = libcorewar_state_virguspace(file, content, NULL, error);
 		if (*content == DIRECT_CHAR)
-			content = state_opcode_direct(op, ++content, error, index);
-		else if (*content >= '0' && *content <= '9')
-			content = state_opcode_indirect(op, content, error, index);
+			content = state_opcode_direct(file, op, ++content, error, index);
+		else if (*content == ':')
+			content = state_opcode_direct(file, op, content, error, index);
+		else if ((*content >= '0' && *content <= '9') || *content == '-')
+			content = state_opcode_indirect(file, op, content, error, index);
 		else if (*content == REG_CHAR)
-			content = state_opcode_reg(op, ++content, error, index);
+			content = state_opcode_reg(file, op, ++content, error, index);
 		else
-			ft_asprintf(error, "bad parameters for %s", op->ref->name);
+			oe(file, content, 8, error, op->ref->name);
 		++index;
 	}
 	if (!*error)
@@ -205,7 +211,14 @@ char											*libcorewar_state_opcode(
 	}
 	hash = ft_hash_src(world, (size_t)length);
 	if (!(g_ref = g_opcodes_get + hash)->name || ft_strcmp(g_ref->name, world))
-		return (libcorewar_error("unknow opcode", error, NULL));
+	{
+		if (*(content + length) == LABEL_CHAR)
+			return (content + length + 1);
+		else if (!*world)
+			return (content);
+		oe(file, content, 19, error, world);
+		return (content);
+	}
 	content += length;
 	return (state_opcode_parameter(file, op, content, error));
 }
