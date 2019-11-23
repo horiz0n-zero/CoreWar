@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:05:14 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 13:30:28 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 16:54:36 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,9 +123,9 @@ struct										s_libcorewar_opcode_src
 
 struct										s_libcorewar_src_file
 {
-	struct stat								content_stat;
 	char									*content;
 	char									*content_end;
+	size_t									content_size;
 	struct s_asm_header						header;
 	struct s_libcorewar_opcode_src			*opcodes;
 	size_t									opcodes_count;
@@ -133,7 +133,9 @@ struct										s_libcorewar_src_file
 
 /* ************************************************************************** */
 struct s_libcorewar_asm_file	*libcorewar_get_asm_file(const char *const named, char **const error, const char *const prefix);
+void							libcorewar_unset_asm_file(struct s_libcorewar_asm_file *const file);
 struct s_libcorewar_src_file	*libcorewar_get_src_file(const char *const named, char **const error);
+void							libcorewar_unset_src_file(struct s_libcorewar_src_file *const file);
 
 // print out
 void							libcorewar_out_asm_file(const int fd, struct s_libcorewar_asm_file *const file);
@@ -144,6 +146,7 @@ void							libcorewar_out_src_file(const int fd, struct s_libcorewar_src_file *c
 char							libcorewar_opcode_src_encoded_parameters(struct s_libcorewar_opcode_src *const op) __attribute__((pure));
 char							libcorewar_opcode_get_encoded_parameters(struct s_libcorewar_opcode_get *const op) __attribute__((pure));
 void							libcorewar_bswap_asm_file(struct s_libcorewar_asm_file *const file);
+void							libcorewar_bswap_src_file(struct s_libcorewar_src_file *const file);
 
 // special
 void							*libcorewar_error(char *const ptr, char **const error_ptr, ...);

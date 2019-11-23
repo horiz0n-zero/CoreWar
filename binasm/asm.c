@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 09:39:48 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 15:46:29 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 17:02:38 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,19 +50,27 @@ static void							compiler_compile_file(const char *const named, const int multi
 	struct s_libcorewar_src_file	*file;
 	int								fd;
 	char							*error;
+	static const char *const		target = "a.cor";
 
 	error = NULL;
-	if (!(file = libcorewar_get_src_file(named, &error)))
+	file = libcorewar_get_src_file(named, &error);
+	if (error)
 		ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error);
 	else
 	{
-		if ((fd = open("a.cor", ASMFILE_FLAG, ASMFILE_MODE)) < 0)
+		if ((fd = open(target, ASMFILE_FLAG, ASMFILE_MODE)) < 0)
 			return ((void)ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, strerror(errno)));
+		libcorewar_bswap_src_file(file);
 		libcorewar_out_src_file(fd, file, &error);
 		if (error)
 			ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error);
+		else
+			ft_printf("Writing output program to %s\n", target);
 		close(fd);
 	}
+	libcorewar_unset_src_file(file);
+	while (1)
+		continue ;
 }
 
 static void							compiler_hexcolors_file(const char *const named, const int multi)

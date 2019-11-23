@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:47:27 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 14:24:29 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 17:02:05 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,24 @@ static const t_state_func							*g_state[2] =
 	[STATE_OPCODE] = g_state_opcode
 };
 
+static void											libcorewar_get_src_labels_resolve(struct s_libcorewar_src_file *const file, char **const error)
+{
+	struct s_libcorewar_opcode_src					*op;
+	int												index;
+
+	op = file->opcodes;
+	while (op)
+	{
+		index = 0;
+		while (index < op->ref->parameters)
+		{
+			//if (op->parameters_labels[index])
+			++index;
+		}
+		op = op->next;
+	}
+}
+
 static void											libcorewar_get_src_loop(struct s_libcorewar_src_file *const file, char **const error)
 {
 	char											*content;
@@ -64,17 +82,17 @@ struct s_libcorewar_src_file						*libcorewar_get_src_file(const char *const nam
 	struct s_libcorewar_src_file					*file;
 
 	if (!(file = ft_memalloc(sizeof(struct s_libcorewar_src_file))))
-		return (strerror_null(error));
-	if (fd < 0)
-		return (strerror_null(error));
-	if (fstat(fd, &file->content_stat) < 0)
-		return (strerror_null(error));
-	if ((file->content = mmap(NULL, file->content_stat.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-		return (strerror_null(error));
-	file->content_end = file->content + file->content_stat.st_size;
+		return (strerror_para(error, file));
+	if (fd < 0 || (file->content_size = lseek(fd, 0, SEEK_END)) < 0)
+		return (strerror_para(error, file));
+	lseek(fd, 0, SEEK_SET);
+	if (!(file->content = malloc(file->content_size)))
+		return (strerror_para(error, file));
+	if (read(fd, file->content, file->content_size) < 0)
+		return (strerror_para(error, file));
+	file->content_end = file->content + file->content_size;
 	libcorewar_get_src_loop(file, error);
+	libcorewar_get_src_labels_resolve(file, error);
 	close(fd);
-	if (*error)
-		return (NULL);
 	return (file);
 }

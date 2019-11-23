@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 14:24:08 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/22 13:56:53 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 16:58:24 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,7 +202,7 @@ char											*libcorewar_state_opcode(
 	g_file = file;
 	world = ft_static_world(content, file->content_end, g_opcodes_chars, &length);
 	if (!(op = ft_memalloc(sizeof(struct s_libcorewar_opcode_src))))
-		return (libcorewar_error("cannot allocate", error, NULL));
+		return (strerror_para(error, content));
 	if (*(content + length) == LABEL_CHAR)
 	{
 		op->label = ft_memcopy(content, length);
