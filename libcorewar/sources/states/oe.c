@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/20 08:41:53 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/20 15:35:02 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 10:16:14 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ void				oeh(struct s_libcorewar_src_file *const file, char *const content, const
 	oe_coli(file, content, coli);
 	parts = oe_show_content(file, content, coli[1]);
 	ft_asprintf(&newformat, "error in header at column %d, line %d\n%s", coli[0], coli[1], g_oe_formats[index]);
-	ft_vasprintf(error, newformat, args);
+	ft_vasprintf(error, newformat, &args);
 	tmp = *error;
 	ft_asprintf(error, "%s\n%s", *error, parts);
 	free(tmp);
@@ -126,7 +126,7 @@ void				oe(struct s_libcorewar_src_file *const file, char *const content, const 
 	oe_coli(file, content, coli);
 	parts = oe_show_content(file, content, coli[1]);
 	ft_asprintf(&newformat, "error in instructions at column %d, line %d\n%s", coli[0], coli[1], g_oe_formats[index]);
-	ft_vasprintf(error, newformat, args);
+	ft_vasprintf(error, newformat, &args);
 	tmp = *error;
 	ft_asprintf(error, "%s\n%s", *error, parts);
 	free(tmp);

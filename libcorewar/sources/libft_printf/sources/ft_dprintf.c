@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 09:59:17 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 10:05:17 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/22 14:55:26 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int						ft_dprintf_function(const char *const formatted, const size_t le
 static struct s_printformat		printformat =
 {
 	.format = NULL,
-	.args = 0,
+	.args = NULL,
 	.percents = NULL,
 	.length = 0,
 	.ret = 0,
@@ -33,11 +33,14 @@ static int						ft_dprintf_function(const char *const formatted, const size_t le
 
 int								ft_dprintf(const int fd, const char *const format, ...)
 {
+	va_list						args;
+
+	va_start(args, format);
 	printformat.length = 0;
 	printformat.format = format;
+	printformat.args = &args;
 	printformat.r1 = fd;
-	va_start(printformat.args, format);
 	ft_printf_core(&printformat, format, &printformat.percents);
-	va_end(printformat.args);
+	va_end(args);
 	return (printformat.ret);
 }

@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/30 09:01:48 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 14:26:51 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 08:58:36 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,10 @@
 # define CONV_PERCENT 1 << 12
 # define CONV_POINTER (CONV_P | CONV_S)
 
-# define SIZE_CHAR 1 << 0
-# define SIZE_SHORT 1 << 1
-# define SIZE_LONG 1 << 2
+# define SIZE_CHAR 1 << 1
+# define SIZE_SHORT 1 << 0
+# define SIZE_INT 1 << 2
+# define SIZE_LONG 1 << 3
 
 # define FLAGS_HASHTAG 1 << 0
 # define FLAGS_PLUS 1 << 1
@@ -67,7 +68,7 @@ struct							s_percent
 struct							s_printformat
 {
 	const char					*format;
-	va_list						args;
+	va_list						*args;
 	struct s_percent			*percents;
 	size_t						length;
 	int							ret;
@@ -115,8 +116,12 @@ struct				s_conversion
 	char			*(*transform)(char *dst, struct s_percent *const percent);
 } __attribute__((packed,aligned(ALIGNMENT)));
 
+
 size_t				precalculate_void(struct s_printformat *const printformat, struct s_percent *const percent);
 char				*transform_void(char *dst, struct s_percent *const percent);
+
+size_t				precalculate_percent(struct s_printformat *const printformat, struct s_percent *const percent);
+char				*transform_percent(char *dst, struct s_percent *const percent);
 
 size_t				precalculate_c(struct s_printformat *const printformat, struct s_percent *const percent);
 char				*transform_c(char *dst, struct s_percent *const percent);

@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 08:59:55 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 11:43:34 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 09:04:04 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,20 @@
 static const struct s_conversion	g_conversions[256] =
 {
 	[0 ... 255] = {0, 0, precalculate_void, transform_void},
+	['%'] = {0, 0, precalculate_percent, transform_percent},
 	['E'] = {CONV_EE, SIZE_CHAR, precalculate_ee, transform_ee},
-	['X'] = {CONV_XX, 0, precalculate_xx, transform_xx},
-	['b'] = {CONV_B, 0, precalculate_b, transform_b},
+	['X'] = {CONV_XX, SIZE_INT, precalculate_xx, transform_xx},
+	['b'] = {CONV_B, SIZE_INT, precalculate_b, transform_b},
 	['c'] = {CONV_C, SIZE_CHAR, precalculate_c, transform_c},
-	['d'] = {CONV_I, 0, precalculate_i, transform_i},
+	['d'] = {CONV_I, SIZE_INT, precalculate_i, transform_i},
 	['e'] = {CONV_E, SIZE_CHAR, precalculate_e, transform_e},
-	['i'] = {CONV_I, 0, precalculate_i, transform_i},
-	['o'] = {CONV_O, 0, precalculate_o, transform_o},
+	['i'] = {CONV_I, SIZE_INT, precalculate_i, transform_i},
+	['o'] = {CONV_O, SIZE_INT, precalculate_o, transform_o},
 	['p'] = {CONV_P, SIZE_LONG, precalculate_p, transform_p},
 	['s'] = {CONV_S, SIZE_LONG, precalculate_s, transform_s},
-	['u'] = {CONV_U, 0, precalculate_u, transform_u},
-	['w'] = {CONV_W, 0, precalculate_w, transform_w},
-	['x'] = {CONV_X, 0, precalculate_x, transform_x}
+	['u'] = {CONV_U, SIZE_INT, precalculate_u, transform_u},
+	['w'] = {CONV_W, SIZE_INT, precalculate_w, transform_w},
+	['x'] = {CONV_X, SIZE_INT, precalculate_x, transform_x}
 };
 
 static const int					g_ft_printf_core_flags[256] =
@@ -42,7 +43,7 @@ static const char		*ft_printf_core_get_number(struct s_printformat *const printf
 {
 	if (*format == '*')
 	{
-		*number = va_arg(printformat->args, int);
+		*number = va_arg(*printformat->args, int);
 		return (++format);
 	}
 	*number = 0;
@@ -57,13 +58,11 @@ static const char		*ft_printf_core_get_number(struct s_printformat *const printf
 static const char		*ft_printf_core_fill_percent_value(struct s_printformat *const printformat, const char *format, struct s_percent *const percent)
 {
 	if (percent->size & SIZE_LONG)
-		percent->data = (unsigned long)va_arg(printformat->args, long);
-	else if (percent->size & SIZE_SHORT)
-		percent->data = ((unsigned long)va_arg(printformat->args, int)) & 0xFFFF;
-	else if (percent->size & SIZE_CHAR)
-		percent->data = ((unsigned long)va_arg(printformat->args, int)) & 0xFF;
-	else
-		percent->data = (unsigned long)va_arg(printformat->args, int);
+		percent->data = (unsigned long)va_arg(*printformat->args, long);
+	else if (percent->size & (SIZE_SHORT | SIZE_CHAR))
+		percent->data = ((unsigned long)va_arg(*printformat->args, int)) & (0xFFFFFF >> percent->size * CHAR_BIT);
+	else if (percent->size & SIZE_INT)
+		percent->data = (unsigned long)va_arg(*printformat->args, int);
 	printformat->length += percent->conversion->precalculate(printformat, percent);
 	return (format);
 }

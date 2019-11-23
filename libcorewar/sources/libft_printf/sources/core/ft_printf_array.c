@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 13:16:00 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 11:57:05 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 09:01:25 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,18 @@ static const struct s_conversion	g_conversions[256] =
 {
 	[0 ... 255] = {0, 0, precalculate_void, transform_void},
 	['E'] = {CONV_EE, SIZE_CHAR, precalculate_ee, transform_ee},
-	['X'] = {CONV_XX, 0, precalculate_xx, transform_xx},
-	['b'] = {CONV_B, 0, precalculate_b, transform_b},
+	['X'] = {CONV_XX, SIZE_INT, precalculate_xx, transform_xx},
+	['b'] = {CONV_B, SIZE_INT, precalculate_b, transform_b},
 	['c'] = {CONV_C, SIZE_CHAR, precalculate_c, transform_c},
-	['d'] = {CONV_I, 0, precalculate_i, transform_i},
+	['d'] = {CONV_I, SIZE_INT, precalculate_i, transform_i},
 	['e'] = {CONV_E, SIZE_CHAR, precalculate_e, transform_e},
-	['i'] = {CONV_I, 0, precalculate_i, transform_i},
-	['o'] = {CONV_O, 0, precalculate_o, transform_o},
+	['i'] = {CONV_I, SIZE_INT, precalculate_i, transform_i},
+	['o'] = {CONV_O, SIZE_INT, precalculate_o, transform_o},
 	['p'] = {CONV_P, SIZE_LONG, precalculate_p, transform_p},
 	['s'] = {CONV_S, SIZE_LONG, precalculate_s, transform_s},
-	['u'] = {CONV_U, 0, precalculate_u, transform_u},
-	['w'] = {CONV_W, 0, precalculate_w, transform_w},
-	['x'] = {CONV_X, 0, precalculate_x, transform_x}
+	['u'] = {CONV_U, SIZE_INT, precalculate_u, transform_u},
+	['w'] = {CONV_W, SIZE_INT, precalculate_w, transform_w},
+	['x'] = {CONV_X, SIZE_INT, precalculate_x, transform_x}
 };
 
 static const struct s_array_conv	g_array_conv[] =
@@ -50,7 +50,7 @@ static const struct s_array_conv	g_array_conv[] =
 static const char	*ft_printf_array_prepare_flags(struct s_printformat *const printformat, const char *format, struct s_percent *const percent)
 {
 	if (*format == '*' && ++format)
-		percent->r3 = (size_t)va_arg(printformat->args, int);
+		percent->r3 = (size_t)va_arg(*printformat->args, int);
 	else if (*format >= '0' && *format <= '9')
 	{
 		percent->r3 = 0;
@@ -69,10 +69,10 @@ const char							*ft_printf_array_prepare(struct s_printformat *const printforma
 {
 	const struct s_array_conv		*conv;
 
-	format = ft_printf_array_prepare_flags(printformat, format, percent);
-	percent->r1 = (unsigned long)format;
 	percent->r2 = 0;
 	percent->r3 = 0;
+	format = ft_printf_array_prepare_flags(printformat, format, percent);
+	percent->r1 = (unsigned long)format;
 	while (*format && *format != ']')
 	{
 		++percent->r2;
@@ -88,7 +88,7 @@ const char							*ft_printf_array_prepare(struct s_printformat *const printforma
 		; // double array
 	percent->flags |= FLAGS_ISARRAY;
 	percent->format = format;
-	percent->data = (unsigned long)va_arg(printformat->args, void*);
+	percent->data = (unsigned long)va_arg(*printformat->args, void*);
 
 	if (percent->size & SIZE_LONG)
 	{

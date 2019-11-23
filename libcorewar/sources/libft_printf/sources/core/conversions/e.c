@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 09:05:37 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/08 15:30:52 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 08:46:49 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ static const char	*g_source_e[256] =
 	[29] = "^]",
 	[30] = "^^",
 	[31] = "^_",
-	[32] = " "
 };
 
 size_t			precalculate_e(struct s_printformat *const printformat, struct s_percent *const percent)

@@ -1,23 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   void.c                                             :+:      :+:    :+:   */
+/*   percent.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/29 10:18:02 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 08:43:16 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/11/23 08:55:18 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/11/23 09:01:20 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft_printf_internal.h"
 
-size_t		precalculate_void(struct s_printformat *const printformat, struct s_percent *const percent)
+size_t				precalculate_percent(struct s_printformat *const printformat, struct s_percent *const percent)
 {
-	return (0);
+	return (1);
 }
 
-char		*transform_void(char *dst, struct s_percent *const percent)
+char				*transform_percent(char *dst, struct s_percent *const percent)
 {
+	*dst++ = '%';
 	return (dst);
 }
