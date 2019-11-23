@@ -6,64 +6,52 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 11:33:19 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/22 14:32:51 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 14:35:33 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libcorewar_out_src_file.h"
 
-static char							out_opcode_encoding_parameters(struct s_libcorewar_opcode_src *const op)
+static char							*out_opcode_parameters(struct s_libcorewar_opcode_src *const op, const int index, char *ins)
 {
-	char							r;
-	int								index;
-	static const char				opcode_encoded[] =
+	if (op->parameters_type[index] & T_REG)
+		*ins++ = (char)op->parameters[index];
+	else if (op->parameters_type[index] & T_IND)
 	{
-		[T_DIR] = DIR_CODE,
-		[T_IND] = IND_CODE,
-		[T_REG] = REG_CODE
-	};
-
-	index = 0;
-	r = 0;
-	while (index < op->ref->parameters)
-	{
-		r |= opcode_encoded[op->parameters_type[index]];
-		if (++index < op->ref->parameters)
-			r <<= 2;
+		*(short*)ins = (short)op->parameters[index];
+		ins += 2;
 	}
-	index = MAX_ARGS_NUMBER - index;
-	if (index > 0)
-		r <<= 2 * index;
-	return (r);
+	else
+	{
+		if (op->ref->parameters_direct_small)
+		{
+			*(short*)ins = (short)op->parameters[index];
+			ins += 2;
+		}
+		else
+		{
+			*(int*)ins = (int)op->parameters[index];
+			ins += 4;
+		}
+	}
+	return (ins);
 }
 
 static char							*out_opcodes(struct s_libcorewar_src_file *const file, char *ins)
 {
 	struct s_libcorewar_opcode_src	*op;
 	int								index;
-	static const int				opcodes_parameters_size[] =
-	{
-		[T_DIR] = DIR_SIZE,
-		[T_IND] = IND_SIZE,
-		[T_REG] = REG_SIZE
-	};
 
 	op = file->opcodes;
 	while (op)
 	{
 		*ins++ = (char)op->ref->opvalue;
 		if (op->ref->parameters_encoding)
-			*ins++ = out_opcode_encoding_parameters(op);
+			*ins++ = libcorewar_opcode_src_encoded_parameters(op);
 		index = 0;
 		while (index < op->ref->parameters)
 		{
-			if (op->parameters_type[index] & T_REG)
-				*ins = (char)op->parameters[index];
-			else if (op->parameters_type[index] & T_IND)
-				*(short*)ins = __builtin_bswap16((short)op->parameters[index]);
-			else
-				*(int*)ins = __builtin_bswap32((int)op->parameters[index]);
-			ins += opcodes_parameters_size[op->parameters_type[index]];
+			ins = out_opcode_parameters(op, index, ins);
 			++index;
 		}
 		op = op->next;

@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 13:35:19 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 15:27:44 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 14:16:11 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@ static void							out_asm_file_opcode(const int fd, struct s_libcorewar_opcode_g
 		else
 		{
 			if (op->parameters_labels[index])
-				ft_dprintf(fd, "%c:%s", '%', op->parameters_labels[index]);
+				ft_dprintf(fd, "%%:%s", op->parameters_labels[index]);
 			else
-				ft_dprintf(fd, "%c%u", '%', op->parameters[index]);
+				ft_dprintf(fd, "%%%u", op->parameters[index]);
 		}
 		if (++index < op->ref->parameters)
 			ft_dprintf(fd, ", ");
@@ -55,29 +55,32 @@ void								libcorewar_out_asm_file(const int fd, struct s_libcorewar_asm_file *
 	}
 }
 
-static void							out_asm_file_opcode_hexcolors(const int fd, struct s_libcorewar_opcode_get *const op)
+static void							out_asm_file_opcode_hexcolors(const int fd, struct s_libcorewar_asm_file *const file,
+		struct s_libcorewar_opcode_get *const op)
 {
 	int								index;
 
 	index = 0;
-	ft_dprintf(fd, "\033[0m%p\t\033[38:5:196m%#hhx ", op->start, op->ref->opvalue);
+	ft_dprintf(fd, "\033[0m%#08x \033[38:5:211m%5s  %02hhx ", op->start - file->content, op->ref->name, op->ref->opvalue);
+	if (op->ref->parameters_encoding)
+		ft_dprintf(fd, "\033[38:5:209m%02hhx ", libcorewar_opcode_get_encoded_parameters(op));
 	while (index < op->ref->parameters)
 	{
 		if (op->parameters_type[index] == REG_CODE)
-			ft_dprintf(fd, "\033[38:5:21m%#hhx", op->parameters[index]);
+			ft_dprintf(fd, "\033[38:5:123m%02hhx", op->parameters[index]);
 		else if (op->parameters_type[index] == IND_CODE)
-			ft_dprintf(fd, "\033[38:5:202m%#hh[2 ]x", op->parameters + index);
+			ft_dprintf(fd, "\033[38:5:157m%02hh[2 ]x", op->parameters + index);
 		else
 		{
 			if (op->ref->parameters_direct_small)
-				ft_dprintf(fd, "\033[38:5:190m%#hh[2 ]u", op->parameters + index);
+				ft_dprintf(fd, "\033[38:5:229m%02hh[2 ]x", op->parameters + index);
 			else
-				ft_dprintf(fd, "\033[38:5:190m%#hh[4 ]u", op->parameters + index);
+				ft_dprintf(fd, "\033[38:5:229m%02hh[4 ]x", op->parameters + index);
 		}
 		if (++index < op->ref->parameters)
 			ft_dprintf(fd, " ");
 	}
-	write(fd, "\n", 1);
+	write(fd, "\033[0m\n", sizeof("\033[0m\n"));
 }
 
 void								libcorewar_out_asm_file_hexcolors(const int fd, struct s_libcorewar_asm_file *const file)
@@ -87,7 +90,7 @@ void								libcorewar_out_asm_file_hexcolors(const int fd, struct s_libcorewar_
 	op = file->opcodes;
 	while (op)
 	{
-		out_asm_file_opcode_hexcolors(fd, op);
+		out_asm_file_opcode_hexcolors(fd, file, op);
 		op = op->next;
 	}
 }

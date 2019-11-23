@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/02 16:35:28 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 11:54:43 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 13:45:40 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ const char	*ft_printf_array_loop_char(struct s_printformat *const printformat, s
 		percent.width = array->width;
 		percent.precision = array->precision;
 		percent.size = array->size;
-		percent.data = (unsigned long)*src;
+		percent.data = (unsigned long)*src & 0xFF;
 		percent.conversion = array->conversion;
 		percent.format = NULL;
 		percent.array = NULL;

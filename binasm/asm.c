@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 09:39:48 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/22 13:15:40 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 15:46:29 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,56 +23,29 @@ static const struct s_argument		g_arguments[256] =
 {
 	['d'] = {"disassemble", FLAGS_D, 0, NULL},
 	['p'] = {"prefix", FLAGS_P, 1, &g_compiler.prefix},
-	['h'] = {"hexcolors", FLAGS_H, 0, NULL}
+	['h'] = {"hexcolors", FLAGS_H, 0, NULL},
+	['l'] = {"labels", FLAGS_L, 0, NULL}
 };
 
 static const char					*g_usages[] =
 {
-	"usage:\tasm [-d] [-p <prefix>] -- file ...\n\n",
-	"\t-d --disassemble transform .cor into readable .s file\n",
-	"\t\t-p --prefix <prefix> each labels will be named :<prefix>x instead of :label_x\n",
-	"\t\t-h --hexcolors out the file in colored\n",
+	"usage: asm [-dhl] [-p <prefix>] -- [file ...]\n\n",
+	"       -h --hexcolors\n",
+	"          disassemble .cor files and show their instructions\n",
+	"          each line contain one instruction with the following format:\n",
+	"          addr opcode_name opcode_value [ parameters ]\n\n",
+	"       -d --disassemble\n",
+	"          disassemble .cor files into readable .s files\n",
+	"          this option override -h --hexcolors\n\n",
+	"       -l --labels\n",
+	"          when dissasembling with option -d --disassemble\n",
+	"          try to resolve labels instead of showing direct integer value\n\n",
+	"       -p --prefix <prefix>\n",
+	"          each labels will be named :<prefix>x instead of :label_x\n",
 	NULL
 };
 
-static void							print_src_file(struct s_libcorewar_src_file *const file)
-{
-	struct s_libcorewar_opcode_src	*op;
-	int								index;
-	static const char				*params[] =
-	{
-		[T_DIR] = "direct(%d)",
-		[T_IND] = "indirect(%d)",
-		[T_REG] = "r%d"
-	};
-
-	ft_printf("%s %s\n", file->header.prog_name, file->header.comment);
-	op = file->opcodes;
-	while (op)
-	{
-		if (op->label)
-			ft_printf("\n%s:\t%s", op->label, op->ref->name);
-		else
-			ft_printf("\t\t%s", op->ref->name);
-		index = 0;
-		while (index < op->ref->parameters)
-		{
-			if (!index)
-				ft_printf(" ");
-			else
-				ft_printf(", ");
-			if (op->parameters_labels[index])
-				ft_printf("%c:%s", '%', op->parameters_labels[index]);
-			else
-				ft_printf(params[op->parameters_type[index]], op->parameters[index]); 
-			++index;
-		}
-		ft_printf("\n");
-		op = op->next;
-	}
-}
-
-static void							compiler_compile_file(const char *const named)
+static void							compiler_compile_file(const char *const named, const int multi)
 {
 	struct s_libcorewar_src_file	*file;
 	int								fd;
@@ -92,29 +65,42 @@ static void							compiler_compile_file(const char *const named)
 	}
 }
 
-static void							compiler_process_file(const char *const named)
+static void							compiler_hexcolors_file(const char *const named, const int multi)
 {
-	struct s_libcorewar_asm_file	*asmfile;
+	struct s_libcorewar_asm_file	*file;
 	char							*error;
 
-	error = NULL;
-	if (g_compiler.flags & FLAGS_D)
-	{
-		if ((asmfile = libcorewar_get_asm_file(named, &error, g_compiler.prefix)))
-			if (g_compiler.flags & FLAGS_H)
-				libcorewar_out_asm_file_hexcolors(STDOUT_FILENO, asmfile);
-			else
-				libcorewar_out_asm_file(STDOUT_FILENO, asmfile);
-		else
-			ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error);
-	}
+	if (!(file = libcorewar_get_asm_file(named, &error, g_compiler.prefix)))
+		ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error); // free error
 	else
-		compiler_compile_file(named);
+	{
+		if (multi)
+			ft_printf("%s:\n", named);
+		libcorewar_bswap_asm_file(file);
+		libcorewar_out_asm_file_hexcolors(STDOUT_FILENO, file);
+	}
+}
+
+static void							compiler_decompile_file(const char *const named, const int multi)
+{
+	struct s_libcorewar_asm_file	*file;
+	char							*error;
+
+	if (!(file = libcorewar_get_asm_file(named, &error, g_compiler.prefix)))
+		ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error);
+	else
+	{
+		if (multi)
+			ft_printf("%s:\n", named);
+		libcorewar_out_asm_file(STDOUT_FILENO, file);
+	}
 }
 
 int									main(int argc, char **argv)
 {
 	char							*error;
+	t_asm_file_func					func;
+	int								multi;
 
 	if (!(argv = arguments_get(++argv, g_arguments, &g_compiler.flags, &error)))
 	{
@@ -124,7 +110,18 @@ int									main(int argc, char **argv)
 			ft_dprintf(STDERR_FILENO, "%s", *argv++);
 		return (EXIT_FAILURE);
 	}
+	if (g_compiler.flags & FLAGS_D)
+		func = compiler_decompile_file;
+	else if (g_compiler.flags & FLAGS_H)
+		func = compiler_hexcolors_file;
+	else
+		func = compiler_compile_file;
+	__builtin_prefetch(func);
+	if (*argv && *(argv + 1))
+		multi = 1;
+	else
+		multi = 0;
 	while (*argv)
-		compiler_process_file(*argv++);
+		func(*argv++, multi);
 	return (EXIT_SUCCESS);
 }

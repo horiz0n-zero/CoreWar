@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:05:14 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/22 13:35:10 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/23 13:30:28 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,11 @@ struct s_libcorewar_src_file	*libcorewar_get_src_file(const char *const named, c
 void							libcorewar_out_asm_file(const int fd, struct s_libcorewar_asm_file *const file);
 void							libcorewar_out_asm_file_hexcolors(const int fd, struct s_libcorewar_asm_file *const file);
 void							libcorewar_out_src_file(const int fd, struct s_libcorewar_src_file *const file, char **const error);
+
+// utility
+char							libcorewar_opcode_src_encoded_parameters(struct s_libcorewar_opcode_src *const op) __attribute__((pure));
+char							libcorewar_opcode_get_encoded_parameters(struct s_libcorewar_opcode_get *const op) __attribute__((pure));
+void							libcorewar_bswap_asm_file(struct s_libcorewar_asm_file *const file);
 
 // special
 void							*libcorewar_error(char *const ptr, char **const error_ptr, ...);
