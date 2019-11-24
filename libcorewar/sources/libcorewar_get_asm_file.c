@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:47:27 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 13:15:52 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 16:57:55 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ static const int									g_parameters_size[] =
 static void											get_asm_file_resolve_labels(
 	struct s_libcorewar_asm_file *const file, char **const error)
 {
-	struct s_libcorewar_opcode_get					*op;
-	struct s_libcorewar_opcode_get					*target;
+	struct s_libcorewar_opcode_asm					*op;
+	struct s_libcorewar_opcode_asm					*target;
 	int												index;
 
 	op = file->opcodes;
@@ -52,7 +52,7 @@ static void											get_asm_file_resolve_labels(
 		index = 0;
 		while (index < op->ref->parameters)
 		{
-			if (op->parameters_type[index] == DIR_CODE && op->parameters_labels[index])
+			if (op->parameters_labels[index])
 			{
 				target = file->opcodes;
 				while (target)
@@ -75,7 +75,7 @@ static void											get_asm_file_resolve_labels(
 
 static char											*get_asm_file_opcodes_direct(
 	struct s_libcorewar_asm_file *const file,
-	struct s_libcorewar_opcode_get *const opcode,
+	struct s_libcorewar_opcode_asm *const opcode,
 	char *content, const int index)
 {
 	char											*addr;
@@ -102,7 +102,7 @@ static char											*get_asm_file_opcodes_direct(
 
 static char											*get_asm_file_opcodes_content(
 	struct s_libcorewar_asm_file *const file,
-	struct s_libcorewar_opcode_get *const opcode,
+	struct s_libcorewar_opcode_asm *const opcode,
 	char *content, char **const error)
 {
 	int												index;
@@ -124,18 +124,21 @@ static char											*get_asm_file_opcodes_content(
 		else if (r == DIR_CODE)
 			content = get_asm_file_opcodes_direct(file, opcode, content, index);
 		else
-			return (libcorewar_error("bad parameter encoding", error, opcode, NULL));
+		{
+			ft_asprintf(error, "bad parameters encoding");
+			return (NULL);
+		}
 		opcode->parameters_type[index++] = r;
 		content += g_parameters_size[r];
 	}
 	return (content);
 }
 
-static struct s_libcorewar_asm_file					*get_asm_file_opcodes(struct s_libcorewar_asm_file *const file, char **const error)
+static void											get_asm_file_opcodes(struct s_libcorewar_asm_file *const file, char **const error)
 {
 	char											*content;
 	const struct s_libcorewar_ref_opcode_get		*ref;
-	struct s_libcorewar_opcode_get					**nopcodes;
+	struct s_libcorewar_opcode_asm					**nopcodes;
 
 	nopcodes = &file->opcodes;
 	content = file->content + sizeof(struct s_asm_header);
@@ -144,20 +147,18 @@ static struct s_libcorewar_asm_file					*get_asm_file_opcodes(struct s_libcorewa
 		ref = g_opcodes_get + *content;
 		if (ref->name)
 		{
-			if (!(*nopcodes = malloc(sizeof(struct s_libcorewar_opcode_get))))
-				return (libcorewar_error("cannot allocate", error, file->content, NULL));
+			if (!(*nopcodes = malloc(sizeof(struct s_libcorewar_opcode_asm))))
+				return (strerror_void(error));
 			(*nopcodes)->ref = ref;
 			(*nopcodes)->start = content++;
 			(*nopcodes)->label = NULL;
 			if (!(content = get_asm_file_opcodes_content(file, *nopcodes, content, error)))
-				return (NULL);
+				return ;
 			nopcodes = &(*nopcodes)->next;
 		}
 		else
-			return (libcorewar_error("bad opcode", error, file, NULL));
+			return ((void)ft_asprintf(error, "bad opcode"));
 	}
-	get_asm_file_resolve_labels(file, error);
-	return (file);
 }
 
 struct s_libcorewar_asm_file						*libcorewar_get_asm_file(const char *const named, char **const error, const char *const prefix)
@@ -165,26 +166,27 @@ struct s_libcorewar_asm_file						*libcorewar_get_asm_file(const char *const nam
 	const int										fd = open(named, O_RDONLY);
 	struct s_libcorewar_asm_file					*file;
    
-	if (!(file = malloc(sizeof(struct s_libcorewar_asm_file))))
-		return (libcorewar_error("cannot allocate", error, NULL));
-	if (fd < 0)
-		return (libcorewar_error("cannot open", error, file, NULL));
-	if (fstat(fd, &file->content_stat) < 0)
-		return (libcorewar_error("cannot fstat", error, file, NULL));
-	if ((file->content = mmap(NULL, file->content_stat.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-		return (libcorewar_error("cannot mmap", error, file, NULL));
-	file->content_end = file->content + file->content_stat.st_size;
-	if (file->content_stat.st_size < sizeof(int))
-		return (libcorewar_error("file to small for checking magic number", error, file, NULL));
+	if (!(file = ft_memalloc(sizeof(struct s_libcorewar_asm_file))))
+		return (strerror_para(error, file));
+	if (fd < 0 || (file->content_size = lseek(fd, 0, SEEK_END)) < 0)
+		return (strerror_para(error, file));
+	lseek(fd, 0, SEEK_SET);
+	if (!file->content_size)
+		return (seterror_para("file empty", error, file));
+	if (!(file->content = malloc(file->content_size)))
+		return (strerror_para(error, file));
+	if (read(fd, file->content, file->content_size) < 0)
+		return (strerror_para(error, file));
+	file->content_end = file->content + file->content_size;
+	if (file->content_size < sizeof(int))
+		return (seterror_para("file to small for checking magic number", error, file));
 	file->header = (void*)file->content;
-	//f->header->magic = __builtin_bswap32(f->header->magic);
 	if (__builtin_bswap32(file->header->magic) != COREWAR_EXEC_MAGIC)
-		return (libcorewar_error("bad magic number", error, file, NULL));
-	//if ((off_t)f->header->prog_size != f->content_stat.st_size)
-	//	return (libcorewar_error("bad file size", error, f, NULL));
+		return (seterror_para("bad magic number", error, file));
 	file->opcodes = NULL;
-	if (!(file->labels_prefix = prefix))
-		file->labels_prefix = "label_";
+	get_asm_file_opcodes(file, error);
 	file->labels_count = 0;
-	return (get_asm_file_opcodes(file, error));
+	if (prefix && (file->labels_prefix = prefix))
+		get_asm_file_resolve_labels(file, error);
+	return (file);
 }

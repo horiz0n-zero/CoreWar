@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:05:14 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 16:54:36 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 16:25:52 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,11 +84,12 @@ struct										s_libcorewar_ref_opcode_get
 /* ************************************************************************** */
 /* *** MAIN STRUCT *** */
 
-typedef struct s_libcorewar_opcode_get		t_libcorewar_opcode_get;
 typedef struct s_libcorewar_asm_file		t_libcorewar_asm_file;
+typedef struct s_libcorewar_src_file		t_libcorewar_src_file;
+typedef struct s_libcorewar_opcode_asm		t_libcorewar_opcode_asm;
 typedef struct s_libcorewar_opcode_src		t_libcorewar_opcode_src;
 
-struct										s_libcorewar_opcode_get
+struct										s_libcorewar_opcode_asm
 {
 	const t_libcorewar_ref_opcode_get		*ref;
 	char									*start;
@@ -96,28 +97,32 @@ struct										s_libcorewar_opcode_get
 	int										parameters[MAX_ARGS_NUMBER];
 	int										parameters_type[MAX_ARGS_NUMBER];
 	const void								*parameters_labels[MAX_ARGS_NUMBER];
-	struct s_libcorewar_opcode_get			*next;
+	struct s_libcorewar_opcode_asm			*next;
 };
 
 struct										s_libcorewar_asm_file // source is .cor
 {
-	struct stat								content_stat;
 	char									*content;
 	char									*content_end;
+	size_t									content_size;
 	const char								*labels_prefix;
 	int										labels_count;
 	int										pad;
 	struct s_asm_header						*header;
-	struct s_libcorewar_opcode_get			*opcodes;
+	struct s_libcorewar_opcode_asm			*opcodes;
 };
 
 struct										s_libcorewar_opcode_src
 {
 	char									*label;
+	struct s_libcorewar_opcode_src			*oplabel;
 	const t_libcorewar_ref_opcode_get		*ref;
 	int										parameters[MAX_ARGS_NUMBER];
 	int										parameters_type[MAX_ARGS_NUMBER];
 	char									*parameters_labels[MAX_ARGS_NUMBER];
+	struct s_libcorewar_opcode_src			*parameters_oplabels[MAX_ARGS_NUMBER];
+	char									*parameters_addrlabels[MAX_ARGS_NUMBER]; // when outputing
+	char									*ins; // when output start of opcode
 	struct s_libcorewar_opcode_src			*next;
 };
 
@@ -144,7 +149,7 @@ void							libcorewar_out_src_file(const int fd, struct s_libcorewar_src_file *c
 
 // utility
 char							libcorewar_opcode_src_encoded_parameters(struct s_libcorewar_opcode_src *const op) __attribute__((pure));
-char							libcorewar_opcode_get_encoded_parameters(struct s_libcorewar_opcode_get *const op) __attribute__((pure));
+char							libcorewar_opcode_get_encoded_parameters(struct s_libcorewar_opcode_asm *const op) __attribute__((pure));
 void							libcorewar_bswap_asm_file(struct s_libcorewar_asm_file *const file);
 void							libcorewar_bswap_src_file(struct s_libcorewar_src_file *const file);
 

@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 13:37:52 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/17 14:04:49 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 16:25:38 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 
 # include "libcorewar.h"
 
-static void		out_asm_file_opcode(const int fd, struct s_libcorewar_opcode_get *const op) __attribute__((always_inline));
-static void		out_asm_file_opcode_hexcolors(const int fd, struct s_libcorewar_opcode_get *const op) __attribute__((always_inline));
+static void		out_asm_file_opcode(const int fd, struct s_libcorewar_opcode_asm *const op) __attribute__((always_inline));
+static void		out_asm_file_opcode_hexcolors(const int fd, struct s_libcorewar_asm_file *const file,
+		struct s_libcorewar_opcode_asm *const op) __attribute__((always_inline));
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/20 08:41:53 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 10:16:14 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 09:25:54 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,8 @@ static const char	*g_oe_formats[] =
 	[17] = "provided number overflow(+) value must be between %d and %d",
 	[18] = "provided number must be between %d and %d",
 	[19] = "unknow instruction %s",
-	[20] = "unexpted character found: %c"
+	[20] = "unexepted character found: %c",
+	[21] = "label: %s is unreachable for %s instruction"
 };
 
 void				oeh(struct s_libcorewar_src_file *const file, char *const content, const int index, char **const error, ...)

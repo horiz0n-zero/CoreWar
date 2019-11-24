@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:06:07 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/22 11:52:14 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 15:11:12 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ char			*ft_world(char *content, char *const content_end, const int *const source
 
 void			*strerror_null(char **const error);
 void			*strerror_para(char **const error, void *const para);
+void			*seterror_para(const char *const e, char **const error, void *const para);
 void			strerror_void(char **const error);
 
 unsigned int	high_tone(unsigned int n) __attribute__((const));

@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 09:39:48 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 17:02:38 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 16:31:42 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,13 @@ static const struct s_argument		g_arguments[256] =
 	['d'] = {"disassemble", FLAGS_D, 0, NULL},
 	['p'] = {"prefix", FLAGS_P, 1, &g_compiler.prefix},
 	['h'] = {"hexcolors", FLAGS_H, 0, NULL},
-	['l'] = {"labels", FLAGS_L, 0, NULL}
+	['l'] = {"labels", FLAGS_L, 0, NULL},
+	['c'] = {"compile", FLAGS_C, 0, NULL}
 };
 
 static const char					*g_usages[] =
 {
-	"usage: asm [-dhl] [-p <prefix>] -- [file ...]\n\n",
+	"usage: asm [-dhlc] [-p <prefix>] -- [file ...]\n\n",
 	"       -h --hexcolors\n",
 	"          disassemble .cor files and show their instructions\n",
 	"          each line contain one instruction with the following format:\n",
@@ -41,7 +42,14 @@ static const char					*g_usages[] =
 	"          when dissasembling with option -d --disassemble\n",
 	"          try to resolve labels instead of showing direct integer value\n\n",
 	"       -p --prefix <prefix>\n",
-	"          each labels will be named :<prefix>x instead of :label_x\n",
+	"          when -d --disassemble with option -l --labels is set\n"
+	"          each resolve labels will be named :<prefix>x instead of :label_x\n\n",
+	"       -c --compile\n",
+	"          transform .s files into .cor files\n",
+	"          files are saved at the same location of .s replacing suffix .s by .cor\n",
+	"          if suffix .s is not specified and is a valid file, .cor is appended\n"
+	"          this option is enabled by default\n",
+	"          this option cannot override -d --disassemble or -h --hexcolors\n",
 	NULL
 };
 
@@ -69,8 +77,8 @@ static void							compiler_compile_file(const char *const named, const int multi
 		close(fd);
 	}
 	libcorewar_unset_src_file(file);
-	while (1)
-		continue ;
+	if (error)
+		free(error);
 }
 
 static void							compiler_hexcolors_file(const char *const named, const int multi)
@@ -94,14 +102,20 @@ static void							compiler_decompile_file(const char *const named, const int mul
 	struct s_libcorewar_asm_file	*file;
 	char							*error;
 
-	if (!(file = libcorewar_get_asm_file(named, &error, g_compiler.prefix)))
+	error = NULL;
+	file = libcorewar_get_asm_file(named, &error, g_compiler.prefix);
+	if (error)
+	{
 		ft_dprintf(STDERR_FILENO, "asm: %s: %s\n", named, error);
+		free(error);
+	}
 	else
 	{
 		if (multi)
 			ft_printf("%s:\n", named);
 		libcorewar_out_asm_file(STDOUT_FILENO, file);
 	}
+	libcorewar_unset_asm_file(file);
 }
 
 int									main(int argc, char **argv)
@@ -124,11 +138,12 @@ int									main(int argc, char **argv)
 		func = compiler_hexcolors_file;
 	else
 		func = compiler_compile_file;
-	__builtin_prefetch(func);
 	if (*argv && *(argv + 1))
 		multi = 1;
 	else
 		multi = 0;
+	if (g_compiler.flags & FLAGS_L && !(g_compiler.flags & FLAGS_P))
+		g_compiler.prefix = "label_";
 	while (*argv)
 		func(*argv++, multi);
 	return (EXIT_SUCCESS);

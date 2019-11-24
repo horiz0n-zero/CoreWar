@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/23 13:17:59 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 16:34:22 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 16:26:57 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void								libcorewar_bswap_src_file(struct s_libcorewar_src_file *const file)
 
 void								libcorewar_bswap_asm_file(struct s_libcorewar_asm_file *const file)
 {
-	struct s_libcorewar_opcode_get	*op;
+	struct s_libcorewar_opcode_asm	*op;
 	int								p;
 
 	op = file->opcodes;

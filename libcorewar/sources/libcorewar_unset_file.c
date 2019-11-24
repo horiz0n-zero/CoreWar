@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/23 16:38:21 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 17:05:41 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 16:19:20 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void								libcorewar_unset_src_file(struct s_libcorewar_src_file *const file)
 {
 	struct s_libcorewar_opcode_src	*op;
-	struct s_libcorewar_asm_file	*tmp;
+	void							*tmp;
 	int								index;
 
 	if (file)
@@ -42,10 +42,25 @@ void								libcorewar_unset_src_file(struct s_libcorewar_src_file *const file)
 	}
 }
 
-void		libcorewar_unset_asm_file(struct s_libcorewar_asm_file *const file)
+void								libcorewar_unset_asm_file(struct s_libcorewar_asm_file *const file)
 {
+	struct s_libcorewar_opcode_asm	*op;
+	int								index;
+	void							*tmp;
+
 	if (file)
 	{
+		op = file->opcodes;
+		while (op)
+		{
+			if (op->label)
+				free(op->label);
+			tmp = op;
+			op = op->next;
+			free(tmp);
+		}
+		if (file->content)
+			free(file->content);
 		free(file);
 	}
 }

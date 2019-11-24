@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 15:35:17 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/22 11:49:44 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 16:26:43 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,26 @@ void				*strerror_para(char **const error, void *const para)
 		while (index < len)
 		{
 			ptr[index] = src[index];
+			++index;
+		}
+		ptr[index] = 0;
+		*error = ptr;
+	}
+	return (para);
+}
+
+void				*seterror_para(const char *const e, char **const error, void *const para)
+{
+	char			*ptr;
+	const size_t	len = ft_strlen(e);
+	size_t			index;
+
+	if ((ptr = malloc(len + 1)))
+	{
+		index = 0;
+		while (index < len)
+		{
+			ptr[index] = e[index];
 			++index;
 		}
 		ptr[index] = 0;

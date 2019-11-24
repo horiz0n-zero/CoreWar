@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 09:39:29 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 13:06:23 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 15:03:52 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # define FLAGS_P 1 << 1
 # define FLAGS_H 1 << 2
 # define FLAGS_L 1 << 3
+# define FLAGS_C 1 << 4
 
 typedef void	(*t_asm_file_func)(const char *const named, const int multi);
 

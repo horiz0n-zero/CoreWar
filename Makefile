@@ -6,7 +6,7 @@
 #    By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/15 09:22:08 by afeuerst          #+#    #+#              #
-#    Updated: 2019/11/23 14:12:14 by afeuerst         ###   ########.fr        #
+#    Updated: 2019/11/24 14:55:19 by afeuerst         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -56,6 +56,7 @@ clean:
 
 fclean: clean
 	rm -f $(LIBCOREWAR_LOCATION) $(ASM) $(COREWAR)
+	rm -rf $(ASM).dSYM $(COREWAR).dSYM
 	rm -rf Corewar.app
 
 re: fclean all

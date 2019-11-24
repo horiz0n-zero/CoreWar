@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/23 10:46:25 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 10:57:17 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 16:25:54 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ char				libcorewar_opcode_src_encoded_parameters(struct s_libcorewar_opcode_src 
 	return (r);
 }
 
-char				libcorewar_opcode_get_encoded_parameters(struct s_libcorewar_opcode_get *const op)
+char				libcorewar_opcode_get_encoded_parameters(struct s_libcorewar_opcode_asm *const op)
 {
 	char			r;
 	int				index;

@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:55:57 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/15 12:50:20 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 15:11:14 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,6 @@ void			*libcorewar_error(char *const ptr, char **const error_ptr, ...)
 		p = va_arg(args, void*);
 	}
 	va_end(args);
-	*error_ptr = ptr;
+	*error_ptr = ft_memcopy(ptr, ft_strlen(ptr));
 	return (NULL);
 }

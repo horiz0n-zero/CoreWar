@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 14:24:08 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 16:58:24 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 14:38:46 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static const struct s_libcorewar_ref_opcode_get	g_opcodes_get[256] =
 {
 	[0x6d] = {"live",  1, 10,   0, 0, 0x01, 0, {T_DIR}},
 	[0xb4] = {"ld",    2, 5,    1, 0, 0x02, 0, {T_DIR | T_IND, T_REG}},
-	[0x9a] = {"st",    2, 5,    1, 0, 0x03, 0, {T_REG, T_DIR | T_IND | T_REG}},
+	[0x9a] = {"st",    2, 5,    1, 0, 0x03, 0, {T_REG, T_IND | T_REG}},
 	[0x38] = {"add",   3, 10,   1, 0, 0x04, 0, {T_REG, T_REG, T_REG}},
 	[0x54] = {"sub",   3, 10,   1, 0, 0x05, 0, {T_REG, T_REG, T_REG}},
 	[0x2c] = {"and",   3, 6,    1, 0, 0x06, 0, {T_REG | T_DIR | T_IND, T_REG | T_IND | T_DIR, T_REG}},
@@ -69,6 +69,7 @@ static char										*state_opcode_indirect(
 {
 	static const int							dirs_minmax[2] = {SHRT_MIN, SHRT_MAX};
 	t_src_number								func;
+	int											length;
 
 	op->parameters_type[index] = T_IND;
 	if (!(op->ref->parameters_type[index] & T_IND))
@@ -84,6 +85,16 @@ static char										*state_opcode_indirect(
 	{
 		op->parameters[index] = func(file, content, dirs_minmax, error);
 		content = libcorewar_state_numbers(NULL, content, NULL, error);
+	}
+	else if (*content == ':')
+	{
+		if (!g_opcodes_chars[*++content])
+			oe(file, content, 6, error);
+		else
+		{
+			op->parameters_labels[index] = ft_memcopy(ft_static_world(content, g_file->content_end, g_opcodes_chars, &length), length);
+			content += length;
+		}
 	}
 	else
 		oe(file, content, 0, error, *content, op->ref->name);
@@ -175,9 +186,10 @@ static char										*state_opcode_parameter(
 			content = libcorewar_state_virguspace(file, content, NULL, error);
 		if (*content == DIRECT_CHAR)
 			content = state_opcode_direct(file, op, ++content, error, index);
-		else if (*content == ':')
+		else if (*content == ':' && op->ref->parameters_type[index] & T_DIR && !(op->ref->parameters_type[index] & T_IND))
 			content = state_opcode_direct(file, op, content, error, index);
-		else if ((*content >= '0' && *content <= '9') || *content == '-')
+		else if ((*content >= '0' && *content <= '9') || *content == '-' ||
+				(*content == ':' && op->ref->parameters_type[index] & T_IND))
 			content = state_opcode_indirect(file, op, content, error, index);
 		else if (*content == REG_CHAR)
 			content = state_opcode_reg(file, op, ++content, error, index);

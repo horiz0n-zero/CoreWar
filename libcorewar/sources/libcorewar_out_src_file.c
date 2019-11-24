@@ -6,33 +6,50 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 11:33:19 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 14:35:33 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 16:22:52 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libcorewar_out_src_file.h"
 
+static void							out_parameters_labels_resolve(struct s_libcorewar_src_file *const file)
+{
+	struct s_libcorewar_opcode_src	*op;
+	int								index;
+
+	op = file->opcodes;
+	while (op)
+	{
+		index = 0;
+		while (index < op->ref->parameters)
+		{
+			if (op->parameters_oplabels[index])
+			{
+				if (op->parameters_type[index] & T_IND || op->ref->parameters_direct_small)
+					*(short*)op->parameters_addrlabels[index] = __builtin_bswap16((short)(op->parameters_oplabels[index]->ins - op->ins));
+				else
+					*(int*)op->parameters_addrlabels[index] = __builtin_bswap32((int)(op->parameters_oplabels[index]->ins - op->ins));
+			}
+			++index;
+		}
+		op = op->next;
+	}
+}
+
 static char							*out_opcode_parameters(struct s_libcorewar_opcode_src *const op, const int index, char *ins)
 {
+	op->parameters_addrlabels[index] = ins;
 	if (op->parameters_type[index] & T_REG)
 		*ins++ = (char)op->parameters[index];
-	else if (op->parameters_type[index] & T_IND)
+	else if (op->parameters_type[index] & T_IND || op->ref->parameters_direct_small)
 	{
 		*(short*)ins = (short)op->parameters[index];
 		ins += 2;
 	}
 	else
 	{
-		if (op->ref->parameters_direct_small)
-		{
-			*(short*)ins = (short)op->parameters[index];
-			ins += 2;
-		}
-		else
-		{
-			*(int*)ins = (int)op->parameters[index];
-			ins += 4;
-		}
+		*(int*)ins = (int)op->parameters[index];
+		ins += 4;
 	}
 	return (ins);
 }
@@ -45,6 +62,7 @@ static char							*out_opcodes(struct s_libcorewar_src_file *const file, char *i
 	op = file->opcodes;
 	while (op)
 	{
+		op->ins = ins;
 		*ins++ = (char)op->ref->opvalue;
 		if (op->ref->parameters_encoding)
 			*ins++ = libcorewar_opcode_src_encoded_parameters(op);
@@ -56,6 +74,7 @@ static char							*out_opcodes(struct s_libcorewar_src_file *const file, char *i
 		}
 		op = op->next;
 	}
+	out_parameters_labels_resolve(file);
 	return (ins);
 }
 

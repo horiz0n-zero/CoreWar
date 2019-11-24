@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:47:27 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 17:02:05 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/24 16:32:00 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,25 @@ static const t_state_func							*g_state[2] =
 	[STATE_OPCODE] = g_state_opcode
 };
 
+static struct s_libcorewar_opcode_src				*libcorewar_get_src_labels_opaddr(struct s_libcorewar_src_file *const file,
+		char **const error, const char *const target)
+{
+	struct s_libcorewar_opcode_src					*op;
+
+	op = file->opcodes;
+	while (op)
+	{
+		if (op->label && op->label[0] == target[0] && !ft_strcmp(op->label, target))
+				return (op);
+		op = op->next;
+	}
+	return (NULL);
+}
+
 static void											libcorewar_get_src_labels_resolve(struct s_libcorewar_src_file *const file, char **const error)
 {
 	struct s_libcorewar_opcode_src					*op;
+	struct s_libcorewar_opcode_src					*target;
 	int												index;
 
 	op = file->opcodes;
@@ -53,7 +69,16 @@ static void											libcorewar_get_src_labels_resolve(struct s_libcorewar_src_
 		index = 0;
 		while (index < op->ref->parameters)
 		{
-			//if (op->parameters_labels[index])
+			if (op->parameters_labels[index])
+			{
+				target = libcorewar_get_src_labels_opaddr(file, error, op->parameters_labels[index]);
+				if (!target)
+				{
+					ft_asprintf(error, "unreachable label %%:%s", op->parameters_labels[index]);
+					break ;
+				}
+				op->parameters_oplabels[index] = target;
+			}
 			++index;
 		}
 		op = op->next;
@@ -86,6 +111,8 @@ struct s_libcorewar_src_file						*libcorewar_get_src_file(const char *const nam
 	if (fd < 0 || (file->content_size = lseek(fd, 0, SEEK_END)) < 0)
 		return (strerror_para(error, file));
 	lseek(fd, 0, SEEK_SET);
+	if (!file->content_size)
+		return (seterror_para("file empty", error, file));
 	if (!(file->content = malloc(file->content_size)))
 		return (strerror_para(error, file));
 	if (read(fd, file->content, file->content_size) < 0)
