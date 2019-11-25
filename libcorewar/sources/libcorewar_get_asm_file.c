@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:47:27 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/24 16:57:55 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/25 11:49:27 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ static void											get_asm_file_resolve_labels(
 						if (!target->label)
 							ft_asprintf(&target->label, "%s%d", file->labels_prefix, file->labels_count++);
 						op->parameters_labels[index] = target->label;
-						break;
+						break ;
 					}
 					target = target->next;
 				}
@@ -83,7 +83,7 @@ static char											*get_asm_file_opcodes_direct(
 	if (opcode->ref->parameters_direct_small)
 	{
 		opcode->parameters[index] = (int)__builtin_bswap16(*(short*)content) & 0xFFFF;
-		addr = opcode->start + opcode->parameters[index];
+		addr = opcode->start + (int)opcode->parameters[index];
 		content -= 2;
 	}
 	else
@@ -91,6 +91,24 @@ static char											*get_asm_file_opcodes_direct(
 		opcode->parameters[index] = __builtin_bswap32(*(int*)content);
 		addr = opcode->start + opcode->parameters[index];
 	}
+	if (opcode->parameters[index] &&
+			addr >= (file->content + sizeof(struct s_asm_header)) && addr < file->content_end &&
+			g_opcodes_get[(int)*addr & 0xFF].name)
+		opcode->parameters_labels[index] = addr;
+	else
+		opcode->parameters_labels[index] = NULL;
+	return (content);
+}
+
+static char											*get_asm_file_opcodes_indirect(
+	struct s_libcorewar_asm_file *const file,
+	struct s_libcorewar_opcode_asm *const opcode,
+	char *content, const int index)
+{
+	char											*addr;
+
+	opcode->parameters[index] = (int)__builtin_bswap16(*(short*)content) & 0xFFFF;
+	addr = opcode->start + (int)opcode->parameters[index];
 	if (opcode->parameters[index] &&
 			addr >= (file->content + sizeof(struct s_asm_header)) && addr < file->content_end &&
 			g_opcodes_get[(int)*addr & 0xFF].name)
@@ -120,7 +138,7 @@ static char											*get_asm_file_opcodes_content(
 		if (r == REG_CODE)
 			opcode->parameters[index] = (int)*content;
 		else if (r == IND_CODE)
-			opcode->parameters[index] = (int)*(short*)content;
+			content = get_asm_file_opcodes_indirect(file, opcode, content, index);
 		else if (r == DIR_CODE)
 			content = get_asm_file_opcodes_direct(file, opcode, content, index);
 		else
@@ -147,11 +165,10 @@ static void											get_asm_file_opcodes(struct s_libcorewar_asm_file *const f
 		ref = g_opcodes_get + *content;
 		if (ref->name)
 		{
-			if (!(*nopcodes = malloc(sizeof(struct s_libcorewar_opcode_asm))))
+			if (!(*nopcodes = ft_memalloc(sizeof(struct s_libcorewar_opcode_asm))))
 				return (strerror_void(error));
 			(*nopcodes)->ref = ref;
 			(*nopcodes)->start = content++;
-			(*nopcodes)->label = NULL;
 			if (!(content = get_asm_file_opcodes_content(file, *nopcodes, content, error)))
 				return ;
 			nopcodes = &(*nopcodes)->next;
@@ -186,7 +203,8 @@ struct s_libcorewar_asm_file						*libcorewar_get_asm_file(const char *const nam
 	file->opcodes = NULL;
 	get_asm_file_opcodes(file, error);
 	file->labels_count = 0;
-	if (prefix && (file->labels_prefix = prefix))
+	file->labels_prefix = prefix;
+	if ((unsigned long)file->labels_prefix)
 		get_asm_file_resolve_labels(file, error);
 	return (file);
 }

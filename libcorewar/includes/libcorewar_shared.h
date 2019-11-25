@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:06:07 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/24 15:11:12 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/25 09:20:58 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void			*ft_memcopy(const char *src, size_t length);
 unsigned char	ft_hash_src(const char *src, size_t size);
 char			*ft_static_world(char *content, char *const content_end, const int *const source, int *const length);
 char			*ft_world(char *content, char *const content_end, const int *const source);
+size_t			ft_number_length(size_t n);
 
 void			*strerror_null(char **const error);
 void			*strerror_para(char **const error, void *const para);
