@@ -1,30 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libcorewar_error.c                                 :+:      :+:    :+:   */
+/*   libcorewar_get_opcode.h                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 11:55:57 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/01 11:36:41 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/12/01 13:27:05 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/12/01 13:27:34 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libcorewar.h"
+#ifndef LIBCOREWAR_GET_OPCODE_H
+# define LIBCOREWAR_GET_OPCODE_H
 
-void			*libcorewar_error(char *const ptr, char **const error_ptr, ...)
-{
-	va_list		args;
-	void		*p;
+# include "libcorewar.h"
 
-	va_start(args, error_ptr);
-	p = va_arg(args, void*);
-	while (p)
-	{
-		free(p);
-		p = va_arg(args, void*);
-	}
-	va_end(args);
-	*error_ptr = ft_memcopy(ptr, ft_strlen(ptr));
-	return (NULL);
-}
+#endif

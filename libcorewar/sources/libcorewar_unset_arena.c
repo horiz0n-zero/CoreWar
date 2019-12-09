@@ -1,30 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libcorewar_error.c                                 :+:      :+:    :+:   */
+/*   libcorewar_unset_arena.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 11:55:57 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/01 11:36:41 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/11/26 10:03:07 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/12/06 11:36:20 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libcorewar.h"
+#include "libcorewar_unset_arena.h"
 
-void			*libcorewar_error(char *const ptr, char **const error_ptr, ...)
+void							libcorewar_unset_arena(struct s_libcorewar_arena *const arena)
 {
-	va_list		args;
-	void		*p;
+	int							index;
+	struct s_libcorewar_process	*procs;
 
-	va_start(args, error_ptr);
-	p = va_arg(args, void*);
-	while (p)
+	if (arena)
 	{
-		free(p);
-		p = va_arg(args, void*);
+		index = 0;
+		while (index < arena->champions_count)
+		{
+			libcorewar_unset_asm_file(arena->champions[index].file);
+			++index;
+		}
+		procs = arena->procs;
+		while (procs)
+			procs = libcorewar_unset_process(procs);
+		free(arena);
 	}
-	va_end(args);
-	*error_ptr = ft_memcopy(ptr, ft_strlen(ptr));
-	return (NULL);
 }

@@ -1,30 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libcorewar_error.c                                 :+:      :+:    :+:   */
+/*   libcorewar_arena_cycle_check.h                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 11:55:57 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/01 11:36:41 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/12/06 15:36:51 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/12/09 11:45:09 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libcorewar.h"
+#ifndef LIBCOREWAR_ARENA_CYCLE_CHECK_H
+# define LIBCOREWAR_ARENA_CYCLE_CHECK_H
 
-void			*libcorewar_error(char *const ptr, char **const error_ptr, ...)
-{
-	va_list		args;
-	void		*p;
+# include "libcorewar.h"
 
-	va_start(args, error_ptr);
-	p = va_arg(args, void*);
-	while (p)
-	{
-		free(p);
-		p = va_arg(args, void*);
-	}
-	va_end(args);
-	*error_ptr = ft_memcopy(ptr, ft_strlen(ptr));
-	return (NULL);
-}
+static void		arena_cycle_check_process(struct s_libcorewar_arena *const arena) __attribute__((always_inline));
+
+#endif

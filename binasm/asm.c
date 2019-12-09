@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 09:39:48 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/25 09:30:16 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/11/29 14:44:03 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,30 +28,27 @@ static const struct s_argument		g_arguments[256] =
 	['c'] = {"compile", FLAGS_C, 0, NULL}
 };
 
-static const char					*g_usages[] =
-{
-	"usage: asm [-dhlc] [-p <prefix>] -- [file ...]\n\n",
-	"       -h --hexcolors\n",
-	"          disassemble .cor files and show their instructions\n",
-	"          each line contain one instruction with the following format:\n",
-	"          addr opcode_name opcode_value [ parameters ]\n\n",
-	"       -d --disassemble\n",
-	"          disassemble .cor files into readable .s files\n",
-	"          this option override -h --hexcolors\n\n",
-	"       -l --labels\n",
-	"          when dissasembling with option -d --disassemble\n",
-	"          try to resolve labels instead of showing direct integer value\n\n",
-	"       -p --prefix <prefix>\n",
+const char							g_usages[] = ""
+	"usage: asm [-dhlc] [-p <prefix>] -- [file ...]\n\n"
+	"       -h --hexcolors\n"
+	"          disassemble .cor files and show their instructions\n"
+	"          each line contain one instruction with the following format:\n"
+	"          addr opcode_name opcode_value [ parameters ]\n\n"
+	"       -d --disassemble\n"
+	"          disassemble .cor files into readable .s files\n"
+	"          this option override -h --hexcolors\n\n"
+	"       -l --labels\n"
+	"          when dissasembling with option -d --disassemble\n"
+	"          try to resolve labels instead of showing direct integer value\n\n"
+	"       -p --prefix <prefix>\n"
 	"          when -d --disassemble with option -l --labels is set\n"
-	"          each resolve labels will be named :<prefix>x instead of :label_x\n\n",
-	"       -c --compile\n",
-	"          transform .s files into .cor files\n",
-	"          files are saved at the same location of .s replacing suffix .s by .cor\n",
-	"          if suffix .s is not specified and is a valid file, .cor is appended\n"
-	"          this option is enabled by default\n",
-	"          this option cannot override -d --disassemble or -h --hexcolors\n",
-	NULL
-};
+	"          each resolve labels will be named :<prefix>x instead of :label_x\n\n"
+	"       -c --compile\n"
+	"          transform .s files into .cor files\n"
+	"          files are saved at the same location of .s replacing suffix .s by .cor\n"
+	"          if suffix .s is not specified and is a valid file .cor is appended\n"
+	"          this option is enabled by default\n"
+	"          this option cannot override -d --disassemble or -h --hexcolors\n";
 
 static void							compiler_compile_file(const char *const named, const int multi)
 {
@@ -127,9 +124,7 @@ int									main(int argc, char **argv)
 	if (!(argv = arguments_get(++argv, g_arguments, &g_compiler.flags, &error)))
 	{
 		ft_dprintf(STDERR_FILENO, "%s\n", error);
-		argv = (char**)g_usages;
-		while (*argv)
-			ft_dprintf(STDERR_FILENO, "%s", *argv++);
+		ft_dprintf(STDERR_FILENO, "%s", g_usages);
 		return (EXIT_FAILURE);
 	}
 	if (g_compiler.flags & FLAGS_D)

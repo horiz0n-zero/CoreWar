@@ -1,30 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libcorewar_error.c                                 :+:      :+:    :+:   */
+/*   live.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 11:55:57 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/01 11:36:41 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/12/01 10:54:34 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/12/09 14:56:22 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libcorewar.h"
+#include "libcorewar_arena_cycle.h"
 
-void			*libcorewar_error(char *const ptr, char **const error_ptr, ...)
+void	cycle_live(struct s_libcorewar_arena *const arena, struct s_libcorewar_process *const process)
 {
-	va_list		args;
-	void		*p;
+	int	index;
 
-	va_start(args, error_ptr);
-	p = va_arg(args, void*);
-	while (p)
+	process->isalive = 1;
+	++process->lives_count;
+	index = 0;
+	while (index < arena->champions_count)
 	{
-		free(p);
-		p = va_arg(args, void*);
+		if (arena->champions[index].id == process->opcode_data.params[0])
+		{
+			arena->liveid = arena->champions[index].id;
+			break ;
+		}
+		++index;
 	}
-	va_end(args);
-	*error_ptr = ft_memcopy(ptr, ft_strlen(ptr));
-	return (NULL);
 }

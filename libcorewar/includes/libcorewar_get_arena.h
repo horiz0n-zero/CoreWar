@@ -1,30 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libcorewar_error.c                                 :+:      :+:    :+:   */
+/*   libcorewar_get_arena.h                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 11:55:57 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/01 11:36:41 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/11/27 11:47:15 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/12/06 11:25:26 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libcorewar.h"
+#ifndef LIBCOREWAR_GET_ARENA_H
+# define LIBCOREWAR_GET_ARENA_H
 
-void			*libcorewar_error(char *const ptr, char **const error_ptr, ...)
-{
-	va_list		args;
-	void		*p;
+# include "libcorewar.h"
 
-	va_start(args, error_ptr);
-	p = va_arg(args, void*);
-	while (p)
-	{
-		free(p);
-		p = va_arg(args, void*);
-	}
-	va_end(args);
-	*error_ptr = ft_memcopy(ptr, ft_strlen(ptr));
-	return (NULL);
-}
+static void	get_arena_champion_place(struct s_libcorewar_arena *const arena,
+		struct s_libcorewar_champion *const champion, char **const error) __attribute__((always_inline));
+
+#endif

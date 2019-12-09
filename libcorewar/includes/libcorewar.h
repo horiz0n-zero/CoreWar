@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:05:14 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/24 16:25:52 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/09 16:22:29 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@
 # define MAX_CHECKS 10
 # define MAX_ARGS_NUMBER 4
 # define MAX_PLAYERS 4
-# define MEM_SIZE (4 * 1024)
+# define MEM_SIZE 4096
 # define IDX_MOD (MEM_SIZE / 8)
 # define CHAMP_MAX_SIZE (MEM_SIZE / 6)
 
@@ -67,18 +67,26 @@ typedef struct								s_asm_header
 /* ************************************************************************** */
 /* *** OBJECTS STRUCT *** */
 
-typedef struct s_libcorewar_ref_opcode_get	t_libcorewar_ref_opcode_get;
+typedef struct s_libcorewar_opcode_info		t_libcorewar_opcode_info;
+typedef struct s_libcorewar_opcode_data		t_libcorewar_opcode_data;
 
-struct										s_libcorewar_ref_opcode_get
+struct										s_libcorewar_opcode_info
 {
 	const char								*name;
 	const int								parameters;
-	const int								instructions;
+	const int								cycles;
 	const int								parameters_encoding;
 	const int								parameters_direct_small;
 	const int								opvalue;
-	const int								pad;
+	const int								carry;
 	const int								parameters_type[MAX_ARGS_NUMBER];
+};
+
+struct										s_libcorewar_opcode_data
+{
+	const struct s_libcorewar_opcode_info	*info;
+	int										types[MAX_ARGS_NUMBER];
+	int										params[MAX_ARGS_NUMBER];
 };
 
 /* ************************************************************************** */
@@ -91,7 +99,7 @@ typedef struct s_libcorewar_opcode_src		t_libcorewar_opcode_src;
 
 struct										s_libcorewar_opcode_asm
 {
-	const t_libcorewar_ref_opcode_get		*ref;
+	const t_libcorewar_opcode_info			*info;
 	char									*start;
 	char									*label;
 	int										parameters[MAX_ARGS_NUMBER];
@@ -116,7 +124,7 @@ struct										s_libcorewar_opcode_src
 {
 	char									*label;
 	struct s_libcorewar_opcode_src			*oplabel;
-	const t_libcorewar_ref_opcode_get		*ref;
+	const t_libcorewar_opcode_info			*info;
 	int										parameters[MAX_ARGS_NUMBER];
 	int										parameters_type[MAX_ARGS_NUMBER];
 	char									*parameters_labels[MAX_ARGS_NUMBER];
@@ -153,9 +161,84 @@ char							libcorewar_opcode_get_encoded_parameters(struct s_libcorewar_opcode_a
 void							libcorewar_bswap_asm_file(struct s_libcorewar_asm_file *const file);
 void							libcorewar_bswap_src_file(struct s_libcorewar_src_file *const file);
 
+int								libcorewar_get_opcode_data(const char *const start, struct s_libcorewar_opcode_data *const data); // todo
+
 // special
 void							*libcorewar_error(char *const ptr, char **const error_ptr, ...);
 
+const char						*libcorewar_color(const unsigned char id);
+unsigned char					libcorewar_colorid(const char *const src);
+unsigned char					libcorewar_colorid_next(void);
+
+
+/* ************************************************************************** */
+
+typedef struct s_libcorewar_champion		t_libcorewar_champion;
+typedef struct s_libcorewar_process			t_libcorewar_process;
+typedef struct s_libcorewar_arena			t_libcorewar_arena;
+typedef void								(*t_libcorewar_opcode_function)(struct s_libcorewar_arena *const arena,
+		struct s_libcorewar_process *const process, const int *const types, const int *const params);
+
+struct										s_libcorewar_champion
+{
+	int32_t									id;
+	int										state;
+	const char								*name;
+	struct s_libcorewar_asm_file			*file;
+	const char								*color;
+	unsigned char							colorid;
+};
+
+struct										s_libcorewar_process
+{
+	int32_t									id;
+	int32_t									isalive;
+	uint32_t								r[REG_NUMBER];
+	uint32_t								pc:12;
+	uint32_t								tmpc:12;
+	uint32_t								cf;
+
+	int32_t									opcode_cycles;
+	struct s_libcorewar_opcode_data			opcode_data;
+
+	struct s_libcorewar_process				*next;
+};
+
+struct										s_libcorewar_arena
+{
+	unsigned char							colorsid[MEM_SIZE];
+
+	char									memory[MEM_SIZE];
+
+	uint32_t								cycles_all; // total number of cycle
+	uint32_t								cycles; // current number of cycle 0 ... cycleToDie
+	uint32_t								cycle_to_die; // start at CYCLE_TO_DIE, decrement by CYCLE_DELTA
+
+	uint32_t								lives_count;
+	uint32_t								checks_count;
+
+	int32_t									liveid; // last live id
+
+	int										champions_count;
+	struct s_libcorewar_champion			champions[MAX_PLAYERS];
+
+	struct s_libcorewar_process				*procs; // if input are 0 1 2 3 -> procs are 3 2 1 0
+
+	const t_libcorewar_opcode_function		*functions;
+};
+
+struct s_libcorewar_arena					*libcorewar_get_arena(
+		const t_libcorewar_opcode_function *const functions,
+		char **const error, ...); // [[void*, int32_t] ...]
+void										libcorewar_unset_arena(struct s_libcorewar_arena *const arena);
+
+int											libcorewar_arena_cycle(struct s_libcorewar_arena *const arena);
+int											libcorewar_arena_cycle_check(struct s_libcorewar_arena *const arena);
+// true if continue
+// false if finish
+
+struct s_libcorewar_process					*libcorewar_get_process(struct s_libcorewar_champion *const champion);
+struct s_libcorewar_process					*libcorewar_unset_process(struct s_libcorewar_process *const process); // return next;
 
 
 

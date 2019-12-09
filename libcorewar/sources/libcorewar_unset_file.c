@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/23 16:38:21 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/24 16:19:20 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/01 11:45:35 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void								libcorewar_unset_src_file(struct s_libcorewar_src_file *const file)
 			if (op->label)
 				free(op->label);
 			index = 0;
-			while (index < op->ref->parameters)
+			while (index < op->info->parameters)
 			{
 				if (op->parameters_labels[index])
 					free(op->parameters_labels[index]);

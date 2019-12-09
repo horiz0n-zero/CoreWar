@@ -1,30 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libcorewar_error.c                                 :+:      :+:    :+:   */
+/*   ld.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 11:55:57 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/01 11:36:41 by afeuerst         ###   ########.fr       */
+/*   Created: 2019/12/01 14:07:31 by afeuerst          #+#    #+#             */
+/*   Updated: 2019/12/09 15:04:38 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libcorewar.h"
+#include "libcorewar_arena_cycle.h"
 
-void			*libcorewar_error(char *const ptr, char **const error_ptr, ...)
+void	cycle_ld(struct s_libcorewar_arena *const arena, struct s_libcorewar_process *const process)
 {
-	va_list		args;
-	void		*p;
-
-	va_start(args, error_ptr);
-	p = va_arg(args, void*);
-	while (p)
-	{
-		free(p);
-		p = va_arg(args, void*);
-	}
-	va_end(args);
-	*error_ptr = ft_memcopy(ptr, ft_strlen(ptr));
-	return (NULL);
+	if (!process->opcode_data.params[0])
+		process->cf = 1;
+	process->r[process->opcode_data.params[1]] = process->opcode_data.params[0];
 }

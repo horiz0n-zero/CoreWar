@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 13:35:19 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/25 11:36:17 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/01 11:43:17 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ static void							out_asm_file_opcode_labels(const int fd, struct s_libcorewar_o
 
 	index = 0;
 	if (op->label)
-		ft_dprintf(fd, "%s:\n%*s%-5s", op->label, length, " ", op->ref->name);
+		ft_dprintf(fd, "%s:\n%*s%-5s", op->label, length, " ", op->info->name);
 	else
-		ft_dprintf(fd, "%*s%-5s", length, " ", op->ref->name);
-	while (index < op->ref->parameters)
+		ft_dprintf(fd, "%*s%-5s", length, " ", op->info->name);
+	while (index < op->info->parameters)
 	{
 		if (op->parameters_type[index] == REG_CODE)
 			ft_dprintf(fd, "r%hhu", (unsigned char)op->parameters[index]);
@@ -35,7 +35,7 @@ static void							out_asm_file_opcode_labels(const int fd, struct s_libcorewar_o
 				ft_dprintf(fd, "%%:%s", op->parameters_labels[index]);
 			else
 				ft_dprintf(fd, "%%%d", op->parameters[index]);
-		if (++index < op->ref->parameters)
+		if (++index < op->info->parameters)
 			ft_dprintf(fd, ", ");
 	}
 	write(fd, "\n", 1);
@@ -46,8 +46,8 @@ static void							out_asm_file_opcode(const int fd, struct s_libcorewar_opcode_a
 	int								index;
 
 	index = 0;
-	ft_dprintf(fd, "%-5s", op->ref->name);
-	while (index < op->ref->parameters)
+	ft_dprintf(fd, "%-5s", op->info->name);
+	while (index < op->info->parameters)
 	{
 		if (op->parameters_type[index] == REG_CODE)
 			ft_dprintf(fd, "r%hhu", (unsigned char)op->parameters[index]);
@@ -55,7 +55,7 @@ static void							out_asm_file_opcode(const int fd, struct s_libcorewar_opcode_a
 			ft_dprintf(fd, "%hu", (unsigned short)op->parameters[index]);
 		else
 			ft_dprintf(fd, "%%%u", op->parameters[index]);
-		if (++index < op->ref->parameters)
+		if (++index < op->info->parameters)
 			ft_dprintf(fd, ", ");
 	}
 	write(fd, "\n", 1);
@@ -93,10 +93,10 @@ static void							out_asm_file_opcode_hexcolors(const int fd, struct s_libcorewa
 	int								index;
 
 	index = 0;
-	ft_dprintf(fd, "\033[0m%#08x \033[38:5:211m%5s  %02hhx ", op->start - file->content, op->ref->name, op->ref->opvalue);
-	if (op->ref->parameters_encoding)
+	ft_dprintf(fd, "\033[0m%#08x \033[38:5:211m%5s  %02hhx ", op->start - file->content, op->info->name, op->info->opvalue);
+	if (op->info->parameters_encoding)
 		ft_dprintf(fd, "\033[38:5:209m%02hhx ", libcorewar_opcode_get_encoded_parameters(op));
-	while (index < op->ref->parameters)
+	while (index < op->info->parameters)
 	{
 		if (op->parameters_type[index] == REG_CODE)
 			ft_dprintf(fd, "\033[38:5:123m%02hhx", op->parameters[index]);
@@ -104,12 +104,12 @@ static void							out_asm_file_opcode_hexcolors(const int fd, struct s_libcorewa
 			ft_dprintf(fd, "\033[38:5:157m%02hh[2 ]x", op->parameters + index);
 		else
 		{
-			if (op->ref->parameters_direct_small)
+			if (op->info->parameters_direct_small)
 				ft_dprintf(fd, "\033[38:5:229m%02hh[2 ]x", op->parameters + index);
 			else
 				ft_dprintf(fd, "\033[38:5:229m%02hh[4 ]x", op->parameters + index);
 		}
-		if (++index < op->ref->parameters)
+		if (++index < op->info->parameters)
 			ft_dprintf(fd, " ");
 	}
 	write(fd, "\033[0m\n", sizeof("\033[0m\n"));

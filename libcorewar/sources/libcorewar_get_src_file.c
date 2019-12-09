@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:47:27 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/24 16:32:00 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/01 11:39:25 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static void											libcorewar_get_src_labels_resolve(struct s_libcorewar_src_
 	while (op)
 	{
 		index = 0;
-		while (index < op->ref->parameters)
+		while (index < op->info->parameters)
 		{
 			if (op->parameters_labels[index])
 			{

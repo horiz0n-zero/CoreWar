@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/23 10:46:25 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/24 16:25:54 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/01 11:36:26 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,10 @@ char				libcorewar_opcode_src_encoded_parameters(struct s_libcorewar_opcode_src 
 
 	index = 0;
 	r = 0;
-	while (index < op->ref->parameters)
+	while (index < op->info->parameters)
 	{
 		r |= g_opcode_encoded[op->parameters_type[index]];
-		if (++index < op->ref->parameters)
+		if (++index < op->info->parameters)
 			r <<= 2;
 	}
 	index = MAX_ARGS_NUMBER - index;
@@ -45,10 +45,10 @@ char				libcorewar_opcode_get_encoded_parameters(struct s_libcorewar_opcode_asm 
 
 	index = 0;
 	r = 0;
-	while (index < op->ref->parameters)
+	while (index < op->info->parameters)
 	{
 		r |= g_opcode_encoded[op->parameters_type[index]];
-		if (++index < op->ref->parameters)
+		if (++index < op->info->parameters)
 			r <<= 2;
 	}
 	index = MAX_ARGS_NUMBER - index;

@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/23 13:17:59 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/24 16:26:57 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/01 11:35:20 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,13 @@ void								libcorewar_bswap_src_file(struct s_libcorewar_src_file *const file)
 	while (op)
 	{
 		p = 0;
-		while (p < op->ref->parameters)
+		while (p < op->info->parameters)
 		{
 			if (op->parameters_type[p] == T_IND)
 				op->parameters[p] = (int)__builtin_bswap16((short)op->parameters[p]);
 			else if (op->parameters_type[p] == T_DIR)
 			{
-				if (op->ref->parameters_direct_small)
+				if (op->info->parameters_direct_small)
 					op->parameters[p] = (int)__builtin_bswap16((short)op->parameters[p]);
 				else
 					op->parameters[p] = __builtin_bswap32(op->parameters[p]);
@@ -49,13 +49,13 @@ void								libcorewar_bswap_asm_file(struct s_libcorewar_asm_file *const file)
 	while (op)
 	{
 		p = 0;
-		while (p < op->ref->parameters)
+		while (p < op->info->parameters)
 		{
 			if (op->parameters_type[p] == T_IND)
 				op->parameters[p] = (int)__builtin_bswap16((short)op->parameters[p]);
 			else if (op->parameters_type[p] == T_DIR)
 			{
-				if (op->ref->parameters_direct_small)
+				if (op->info->parameters_direct_small)
 					op->parameters[p] = (int)__builtin_bswap16((short)op->parameters[p]);
 				else
 					op->parameters[p] = __builtin_bswap32(op->parameters[p]);
