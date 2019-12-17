@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/26 10:07:50 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/09 11:40:15 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/13 08:51:10 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,11 @@ static void							get_arena_champion(struct s_libcorewar_arena *const arena,
 	struct s_libcorewar_champion	*champion;
 	struct s_libcorewar_process		*process;
 
-	if (arena->champions_count + 1 >= MAX_PLAYERS)
+	if (arena->champions_count + 1 > MAX_PLAYERS)
 		return ((void)ft_asprintf(error, "too many players"));
 	champion = arena->champions + arena->champions_count++;
 	champion->id = id;
 	champion->colorid = libcorewar_colorid_next();
-	champion->color = libcorewar_color(champion->colorid);
 	champion->file = libcorewar_get_asm_file(named, error, NULL);
 	if (*error)
 		return (libcorewar_unset_asm_file(champion->file));

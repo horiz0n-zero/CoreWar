@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 10:44:18 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/01 11:47:20 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/14 11:26:06 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ static char										*state_fill(struct s_libcorewar_src_file *const file,
 char				*libcorewar_state_head_point(struct s_libcorewar_src_file *const file, char *content, int *const state, char **const error)
 {
 	static size_t	getted = 0;
-	int				index;
+	size_t			index;
 	char *const		start = ++content;
 
 	index = 0;

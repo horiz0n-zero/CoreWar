@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 09:06:21 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 10:00:28 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/14 11:24:35 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ size_t			precalculate_xx(struct s_printformat *const printformat, struct s_perce
 	percent->r1 = ft_printf_unumber_length(percent->data, 16);
 	if (percent->flags & FLAGS_HASHTAG)
 		percent->r1 += 2;
-	if (percent->width && percent->width > percent->r1)
+	if (percent->width && (size_t)percent->width > percent->r1)
 	{
-		percent->r2 = percent->width - percent->r1;
+		percent->r2 = (size_t)percent->width - percent->r1;
 		return (percent->width);
 	}
 	else

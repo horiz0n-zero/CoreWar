@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/01 08:40:36 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/09 11:19:38 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/14 12:02:45 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ static const struct s_libcorewar_opcode_info	g_opcodes_info[256] =
 
 static const t_cycle_function					g_arena_cycle_opcode[256] =
 {
+	[0x00] = cycle_aff,
 	[0x01] = cycle_live,
 	[0x02] = cycle_ld,
 	[0x03] = cycle_st,
@@ -76,14 +77,14 @@ static int										arena_cycle_params(
 	process->opcode_data.params[i] = 0;
 	if (process->opcode_data.types[i] & T_REG)
 	{
-		arena_cycle_param(arena, process, &process->opcode_data.params[i], 1);
+		arena_cycle_param(arena, process, (char*)&process->opcode_data.params[i], 1);
 		if (!(process->opcode_data.params[i] >= 0 && process->opcode_data.params[i] < REG_NUMBER))
 			return (1);
 	}
-	else if (process->opcode_data[i] & T_IND || info->parameters_direct_small)
-		arena_cycle_param(arena, process, &process->opcode_data.params[i], 2);
+	else if (process->opcode_data.types[i] & T_IND || info->parameters_direct_small)
+		arena_cycle_param(arena, process, (char*)&process->opcode_data.params[i], 2);
 	else
-		arena_cycle_param(arena, process, &process->opcode_data.params[i], 4);
+		arena_cycle_param(arena, process, (char*)&process->opcode_data.params[i], 4);
 	return (0);
 }
 
@@ -96,7 +97,7 @@ static int										arena_cycle_read(
 	char										e;
 
 	i = 0;
-	process->tmpc = process->pc;
+	process->tmpc = process->pc + 1;
 	if (info->parameters_encoding)
 		e = arena->memory[process->tmpc++];
 	else
@@ -111,6 +112,7 @@ static int										arena_cycle_read(
 			return (0);
 		++i;
 	}
+	process->opcode_cycles = info->cycles;
 	process->pc = process->tmpc;
 	return (1);
 }

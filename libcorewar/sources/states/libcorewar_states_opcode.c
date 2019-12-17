@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 14:24:08 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/01 11:55:09 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/14 11:31:15 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ static char										*state_opcode_indirect(
 	}
 	else if (*content == ':')
 	{
-		if (!g_opcodes_chars[*++content])
+		if (!g_opcodes_chars[(int)*++content & 0xFF])
 			oe(file, content, 6, error);
 		else
 		{
@@ -137,11 +137,11 @@ static char										*state_opcode_direct(
 	int											length;
 
 	op->parameters_type[index] = T_DIR;
-	if (!(op->ref->parameters_type[index] & T_DIR))
+	if (!(op->info->parameters_type[index] & T_DIR))
 		oe(file, content, 5, error, index, op->info->name);
 	else if (*content == ':')
 	{
-		if (!g_opcodes_chars[*++content])
+		if (!g_opcodes_chars[(int)*++content & 0xFF])
 			oe(file, content, 6, error);
 		else
 		{
@@ -194,7 +194,7 @@ static char										*state_opcode_parameter(
 		else if (*content == REG_CHAR)
 			content = state_opcode_reg(file, op, ++content, error, index);
 		else
-			oe(file, content, 8, error, op->ref->name);
+			oe(file, content, 8, error, op->info->name);
 		++index;
 	}
 	if (!*error)

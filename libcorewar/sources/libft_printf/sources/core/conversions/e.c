@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 09:05:37 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 08:46:49 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/14 11:07:46 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ size_t			precalculate_e(struct s_printformat *const printformat, struct s_percen
 
 char			*transform_e(char *dst, struct s_percent *const percent)
 {
-	const char	c = (char)percent->data;
+	const int	c = (int)percent->data;
 
 	if (g_source_e[c])
 	{

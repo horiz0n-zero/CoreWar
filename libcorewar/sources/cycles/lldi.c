@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/09 15:08:41 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/09 15:10:08 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/14 10:58:10 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ void			cycle_lldi(struct s_libcorewar_arena *const arena, struct s_libcorewar_pr
 	if (process->opcode_data.types[0] & T_REG)
 		p1 = process->r[process->opcode_data.params[0]];
 	else
-		p1 = process->opcode_data.params[0];
+		p2 = process->opcode_data.params[0];
 	if (process->opcode_data.types[1] & T_REG)
-		p1 = process->r[process->opcode_data.params[1]];
+		p2 = process->r[process->opcode_data.params[1]];
 	else
 		p1 = process->opcode_data.params[1];
 	process->r[process->opcode_data.params[2]] = (p1 + p2);

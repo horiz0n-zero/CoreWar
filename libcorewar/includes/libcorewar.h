@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:05:14 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/09 16:22:29 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/12 14:19:21 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@
 # define MAX_ARGS_NUMBER 4
 # define MAX_PLAYERS 4
 # define MEM_SIZE 4096
+# define BYTES_LINE 32
+# define LINES (MEM_SIZE / BYTES_LINE)
 # define IDX_MOD (MEM_SIZE / 8)
 # define CHAMP_MAX_SIZE (MEM_SIZE / 6)
 
@@ -120,6 +122,14 @@ struct										s_libcorewar_asm_file // source is .cor
 	struct s_libcorewar_opcode_asm			*opcodes;
 };
 
+struct										s_libcorewar_cor_file // source is a valid .cor + padding 4
+{
+	struct s_asm_header						*header;
+	void									*instructions;
+	size_t									length;
+	size_t									padded_length; // instructions size!
+};
+
 struct										s_libcorewar_opcode_src
 {
 	char									*label;
@@ -147,6 +157,10 @@ struct										s_libcorewar_src_file
 /* ************************************************************************** */
 struct s_libcorewar_asm_file	*libcorewar_get_asm_file(const char *const named, char **const error, const char *const prefix);
 void							libcorewar_unset_asm_file(struct s_libcorewar_asm_file *const file);
+
+struct s_libcorewar_cor_file	*libcorewar_get_cor_file(const char *const named, char **const error);
+void							libcorewar_unset_cor_file(struct s_libcorewar_cor_file *const file);
+
 struct s_libcorewar_src_file	*libcorewar_get_src_file(const char *const named, char **const error);
 void							libcorewar_unset_src_file(struct s_libcorewar_src_file *const file);
 
@@ -169,7 +183,7 @@ void							*libcorewar_error(char *const ptr, char **const error_ptr, ...);
 const char						*libcorewar_color(const unsigned char id);
 unsigned char					libcorewar_colorid(const char *const src);
 unsigned char					libcorewar_colorid_next(void);
-
+unsigned char					libcorewar_colorid_nextid(const unsigned char id);
 
 /* ************************************************************************** */
 
@@ -177,7 +191,7 @@ typedef struct s_libcorewar_champion		t_libcorewar_champion;
 typedef struct s_libcorewar_process			t_libcorewar_process;
 typedef struct s_libcorewar_arena			t_libcorewar_arena;
 typedef void								(*t_libcorewar_opcode_function)(struct s_libcorewar_arena *const arena,
-		struct s_libcorewar_process *const process, const int *const types, const int *const params);
+		struct s_libcorewar_process *const process);
 
 struct										s_libcorewar_champion
 {
@@ -185,7 +199,6 @@ struct										s_libcorewar_champion
 	int										state;
 	const char								*name;
 	struct s_libcorewar_asm_file			*file;
-	const char								*color;
 	unsigned char							colorid;
 };
 

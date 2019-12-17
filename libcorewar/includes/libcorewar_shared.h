@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:06:07 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/06 13:05:23 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/12 13:56:30 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void			strerror_void(char **const error);
 unsigned int	high_tone(unsigned int n) __attribute__((const));
 int				multi_issafe(int lhs, int rhs) __attribute__((const));
 int				add_issafe(int lhs, int rhs) __attribute__((const));
-uint32_t		ft_atouint32(const char *src, char **const error)
+uint32_t		ft_atouint32(const char *src, char **const error);
 
 
 #endif

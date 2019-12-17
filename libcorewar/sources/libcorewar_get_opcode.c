@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/01 13:26:48 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/01 13:47:04 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/12 14:07:32 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ int												libcorewar_get_opcode_data(const char *const start, struct s_libc
 	const char									*ptr;
 	char										encode;
 
-	if ((data->info = g_opcodes_info[(int)*start & 0xFF])->name)
+	if ((data->info = g_opcodes_info + *start)->name)
 	{
-		ptr = ++start;
+		ptr = (start + 1);
 		if (data->info->parameters_encoding)
 			encode = *ptr++;
 		else

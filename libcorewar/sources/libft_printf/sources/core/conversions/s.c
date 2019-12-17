@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/30 08:40:35 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/23 09:28:19 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/14 11:10:25 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@ size_t					precalculate_s(struct s_printformat *const printformat, struct s_perc
 	percent->r1 = 0;
 	while (src[percent->r1])
 		++percent->r1;
-	if (percent->precision && percent->precision < percent->r1)
+	if (percent->precision && (size_t)percent->precision < percent->r1)
 		percent->r1 = percent->precision;
-	if (percent->width && percent->width > percent->r1)
+	if (percent->width && (size_t)percent->width > percent->r1)
 	{
-		percent->r2 = percent->width - percent->r1;
+		percent->r2 = (size_t)percent->width - percent->r1;
 		return (percent->width);
 	}
 	else

@@ -6,7 +6,7 @@
 #    By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/15 09:22:08 by afeuerst          #+#    #+#              #
-#    Updated: 2019/11/29 09:27:58 by afeuerst         ###   ########.fr        #
+#    Updated: 2019/12/14 11:32:24 by afeuerst         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,8 @@ LIBCOREWAR_LOCATION = $(join $(join $(LIBCOREWAR_DIR), /), $(LIBCOREWAR))
 LIBCOREWAR_OBJECTS = $(LIBCOREWAR_SRC:.c=.o)
 LIBFT_PRINTF_INC = ./libcorewar/sources/libft_printf/includes/
 
-FLAGS = -O0 -g -Wno- -I $(LIBCOREWAR_INC) -I $(LIBFT_PRINTF_INC)
+FLAGS = -Wall -Wextra -Werror -O0 -g -I $(LIBCOREWAR_INC) -I $(LIBFT_PRINTF_INC)
+FLAGS += -Wno-missing-field-initializers -Wno-initializer-overrides -Wno-unused-parameter -Wno-unused-variable
 
 COREWAR = corewar
 ASM = asm

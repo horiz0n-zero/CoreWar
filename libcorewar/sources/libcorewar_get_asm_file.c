@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 11:47:27 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/01 11:37:07 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/14 11:04:20 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ static char											*get_asm_file_opcodes_direct(
 	}
 	if (opcode->parameters[index] &&
 			addr >= (file->content + sizeof(struct s_asm_header)) && addr < file->content_end &&
-			g_opcodes_get[(int)*addr & 0xFF].name)
+			g_opcodes_info[(int)*addr & 0xFF].name)
 		opcode->parameters_labels[index] = addr;
 	else
 		opcode->parameters_labels[index] = NULL;
@@ -111,7 +111,7 @@ static char											*get_asm_file_opcodes_indirect(
 	addr = opcode->start + (int)opcode->parameters[index];
 	if (opcode->parameters[index] &&
 			addr >= (file->content + sizeof(struct s_asm_header)) && addr < file->content_end &&
-			g_opcodes_get[(int)*addr & 0xFF].name)
+			g_opcodes_info[(int)*addr & 0xFF].name)
 		opcode->parameters_labels[index] = addr;
 	else
 		opcode->parameters_labels[index] = NULL;
@@ -162,7 +162,7 @@ static void											get_asm_file_opcodes(struct s_libcorewar_asm_file *const f
 	content = file->content + sizeof(struct s_asm_header);
 	while (content < file->content_end)
 	{
-		info = g_opcodes_get + *content;
+		info = g_opcodes_info + *content;
 		if (info->name)
 		{
 			if (!(*nopcodes = ft_memalloc(sizeof(struct s_libcorewar_opcode_asm))))
@@ -182,10 +182,10 @@ struct s_libcorewar_asm_file						*libcorewar_get_asm_file(const char *const nam
 {
 	const int										fd = open(named, O_RDONLY);
 	struct s_libcorewar_asm_file					*file;
-   
+  
 	if (!(file = ft_memalloc(sizeof(struct s_libcorewar_asm_file))))
 		return (strerror_para(error, file));
-	if (fd < 0 || (file->content_size = lseek(fd, 0, SEEK_END)) < 0)
+	if ((file->content_size = lseek(fd, 0, SEEK_END)) < 0)
 		return (strerror_para(error, file));
 	lseek(fd, 0, SEEK_SET);
 	if (!file->content_size)
@@ -198,6 +198,7 @@ struct s_libcorewar_asm_file						*libcorewar_get_asm_file(const char *const nam
 	if (file->content_size < sizeof(int))
 		return (seterror_para("file to small for checking magic number", error, file));
 	file->header = (void*)file->content;
+	file->header->prog_size = __builtin_bswap32(file->header->prog_size);
 	if (__builtin_bswap32(file->header->magic) != COREWAR_EXEC_MAGIC)
 		return (seterror_para("bad magic number", error, file));
 	file->opcodes = NULL;

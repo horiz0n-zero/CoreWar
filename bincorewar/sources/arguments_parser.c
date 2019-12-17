@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/02 11:31:33 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/06 15:30:28 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/13 13:31:45 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 static const struct s_argument		g_arguments[256] =
 {
 	['d'] = {"dump", FLAGS_D, 1, &g_corewar.number_dump},
-	['s'] = {"show", FLAGS_S, 1, &g_compiler.number_show},
-	['o'] = {"output", FLAGS_O, 1, &g_compiler.file_output},
+	['s'] = {"show", FLAGS_S, 1, &g_corewar.number_show},
+	['o'] = {"output", FLAGS_O, 1, &g_corewar.file_output},
 	['b'] = {"binary", FLAGS_B, 0, NULL},
 	['e'] = {"enable-color", FLAGS_C, 0, NULL},
 	['a'] = {"aff-off", FLAGS_A, 0, NULL},
@@ -26,8 +26,11 @@ static const struct s_argument		g_arguments[256] =
 	['q'] = {"quiet", FLAGS_Q, 0, NULL}
 };
 
-static const char					g_n = 'n';
-static const char					*g_number = "number";
+static const struct s_chargument	g_champions_args[256] =
+{
+	['n'] = {"number", champion_arg_id},
+	['c'] = {"color", champion_arg_color}
+};
 
 static char							**argument_short(
 		char **argv,
@@ -41,7 +44,7 @@ static char							**argument_short(
 	ptr = *argv++ + 1;
 	while (*ptr)
 	{
-		if (*ptr == g_n && *(ptr - 1) == '-' && !*(ptr + 1))
+		if (g_champions_args[(int)*ptr & 0xFF].named && *(ptr - 1) == '-' && !*(ptr + 1))
 		{
 			*champi = 1;
 			return (argv);
@@ -51,10 +54,12 @@ static char							**argument_short(
 			return (NULL);
 		*flags |= arg->flags;
 		if (arg->require)
+		{
 			if (!*argv && ft_asprintf(error, "option requires an argument -- %c", ptr[-1]))
 				return (NULL);
 			else
 				*arg->required = *argv++;
+		}
 	}
 	return (argv);
 }
@@ -66,9 +71,9 @@ static char							**argument_long(
 		char **const error)
 {
 	const char						*name = *argv++ + 2;
-	const struct s_argument			*arg = arguments + (int)*name;
+	const struct s_argument			*arg = g_arguments + (int)*name;
 
-	if (!arg->name && !ft_strcmp(name, g_number))
+	if (!arg->name && !ft_strcmp(g_champions_args[(int)*name].named, name))
 	{
 		*champi = 1;
 		return (argv);
@@ -86,44 +91,30 @@ static char							**argument_long(
 	return (argv);
 }
 
-static void							arguments_id_exist(struct s_corewar *const corewar, const int id)
-{
-	int								index;
-
-	index = 0;
-	while (index < corewar->info_count)
-	{
-		if (corewar->info[index].id == id)
-		{
-			ft_asprintf(&corewar->error, "champion cannot have the same id");
-		}
-		++index;
-	}
-}
-
 static void							arguments_champions(struct s_corewar *const corewar, char **argv)
 {
-	int								id;
+	const struct s_chargument		*arg;
 
-	id = 0;
 	while (!corewar->error && *argv)
 	{
 		if (**argv == '-')
 		{
+			if (!(arg = g_champions_args + *((*argv) + 1))->named)
+				arg = g_champions_args + *(*argv + 2);
 			if (!*++argv)
-				return ((void)ft_asprintf(&corewar->error, "option requires an argument -n --number"));
-			id = ft_atouint32(*argv++, &corewar->error);
-			arguments_id_exist(corewar, id);
+				return ((void)ft_asprintf(&corewar->error, "champion option requires an argument -%c --%s", arg->named[0], arg->named));
+			arg->func(corewar, *argv++);
 		}
 		else
 		{
-			if (corewar->info_count + 1 >= MAX_PLAYERS)
+			if (corewar->info_count + 1 > MAX_PLAYERS)
 				return ((void)ft_asprintf(&corewar->error, "max players"));
-			arguments_id_exist(corewar, id);
-			if (corewar->error)
-				break ;
+			if (!(corewar->info[corewar->info_count].flags & FLAGS_CHAMPION_N))
+				champion_arg_id(corewar, NULL);
+			if (!(corewar->info[corewar->info_count].flags & FLAGS_CHAMPION_C))
+				champion_arg_color(corewar, NULL);
 			corewar->info[corewar->info_count].named = *argv++;
-			corewar->info[corewar->info_count++].id = id++;
+			++corewar->info_count;
 		}
 	}
 }
@@ -143,10 +134,10 @@ void								arguments_parser(struct s_corewar *const corewar, char **argv)
 			{
 				if (!*(*argv + 2) && ++argv)
 					break ;
-				argv = argument_long(argv, &champi, &corewar->flags, &corewar->error);
+				argv = argument_long(argv, &corewar->flags, &champi, &corewar->error);
 			}
 			else
-				argv = argument_short(argv, &champi, &corewar->flags, &corewar->error);
+				argv = argument_short(argv, &corewar->flags, &champi, &corewar->error);
 		}
 		else
 			break ;

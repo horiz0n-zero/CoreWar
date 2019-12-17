@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 14:45:57 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/18 15:35:10 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/14 10:59:56 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 char			*ft_world(char *content, char *const content_end, const int *const source)
 {
-	while (content < content_end && source[*content])
+	while (content < content_end && source[(int)*content & 0xFF])
 		++content;
 	return (content);
 }
@@ -26,7 +26,7 @@ char			*ft_static_world(char *content, char *const content_end, const int *const
 	char				*ptr;
 
 	ptr = world_buffer;
-	while (source[*content] && content < content_end && ptr < world_buffer_end)
+	while (source[(int)*content & 0xFF] && content < content_end && ptr < world_buffer_end)
 		*ptr++ = *content++;
 	*ptr = 0;
 	*length = (int)(ptr - world_buffer);

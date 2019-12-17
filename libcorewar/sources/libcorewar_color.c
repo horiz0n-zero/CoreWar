@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/06 13:12:24 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/06 14:20:05 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/14 11:01:46 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static const char			*g_colors[256] =
 	[HASH_CERISE] = "\033[38:5:160m",
 	[HASH_VIOLET] = "\033[38:5:177m",
 	[HASH_FRAISE] = "\033[38:5:197m",
-	[HASH_FRAISE] = "\033[38:5:202m"
+	[HASH_ORANGE] = "\033[38:5:202m"
 };
 
 static const char			*g_colors_name[256] =
@@ -60,7 +60,7 @@ static const unsigned char	g_colors_next[] =
 	HASH_VIOLET,
 	HASH_FRAISE,
 	HASH_ORANGE
-}
+};
 
 const char					*libcorewar_color(const unsigned char id)
 {
@@ -73,19 +73,37 @@ const char					*libcorewar_color(const unsigned char id)
 
 unsigned char				libcorewar_colorid(const char *const src)
 {
-	const unsigned char	id = ft_hash_src(src, ft_strlen(src));
-	const char *const	color = g_colors[id];
+	const unsigned char		id = ft_hash_src(src, ft_strlen(src));
+	const char *const		color = g_colors[id];
 
 	if (color && !ft_strcmp(src, g_colors_name[id]))
-		return (color);
+		return (id);
 	return (0);
 }
 
 unsigned char				libcorewar_colorid_next(void)
 {
-	static int				next = 0;
+	static unsigned long	next = 0;
 
 	if (next >= sizeof(g_colors_next) / sizeof(g_colors_next[0]))
 		next = 0;
 	return (g_colors_next[next++]);
+}
+
+unsigned char				libcorewar_colorid_nextid(const unsigned char id)
+{
+	unsigned long			index;
+
+	index = 0;
+	while (index < sizeof(g_colors_next) / sizeof(g_colors_next[0]))
+	{
+		if (g_colors_next[index] == id)
+		{
+			if (++index >= sizeof(g_colors_next) / sizeof(g_colors_next[0]))
+				break ;
+			return (g_colors_next[index]);
+		}
+		++index;
+	}
+	return (g_colors_next[0]);
 }

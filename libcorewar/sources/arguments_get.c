@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 11:55:58 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/11/15 10:16:33 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/17 10:48:43 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,11 @@ static void							*argument_error(const char *src,
 
 	index = 0;
 	*error = buffer;
-	while (*src && index < (sizeof(buffer) - 1))
+	while (*src && index < (int)(sizeof(buffer) - 1))
 	{
 		if (*src == '#')
 		{
-			while (*arg && index < (sizeof(buffer) - 1))
+			while (*arg && index < (int)(sizeof(buffer) - 1))
 				buffer[index++] = *arg++;
 			src++;
 		}
