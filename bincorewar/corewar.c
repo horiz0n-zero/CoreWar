@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 09:40:33 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/17 11:11:01 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/18 09:37:50 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,28 +89,26 @@ void										corewar_verbosity(void)
 
 void										corewar_loop(void)
 {
-	void									(*dump)(void);
+	t_libcorewar_dump_function				dump;
 
 	if (g_corewar.flags & FLAGS_B)
-		dump = corewar_dump_binary;
+		dump = libcorewar_dump_binary;
 	else if (g_corewar.flags & FLAGS_C)
-		dump = corewar_dump_colors;
+		dump = libcorewar_dump_colors;
 	else
-		dump = corewar_dump;
+		dump = libcorewar_dump;
 	while (libcorewar_arena_cycle(g_corewar.arena))
 	{
-		ft_printf("cycles %u\n", g_corewar.arena->cycles_all);
 		if (g_corewar.flags & FLAGS_S && g_corewar.arena->cycles_all && g_corewar.show)
 		{
-			ft_printf("enter in FLAGS_S (%u %% %u) -> %u\n", g_corewar.arena->cycles_all, g_corewar.show, !(g_corewar.arena->cycles_all % g_corewar.show));
 			if (!(g_corewar.arena->cycles_all % g_corewar.show))
-				dump();
+				dump(g_corewar.fd, g_corewar.arena);
 		}
 		if (g_corewar.flags & FLAGS_D && g_corewar.arena->cycles_all && g_corewar.dump)
 		{
 			if (!(g_corewar.arena->cycles_all % g_corewar.dump))
 			{
-				dump();
+				dump(g_corewar.fd, g_corewar.arena);
 				break ;
 			}
 		}
@@ -159,7 +157,7 @@ int											main(int argc, char **argv)
 	if (g_corewar.flags & FLAGS_D && !error)
 		g_corewar.dump = ft_atouint32(g_corewar.number_dump, &g_corewar.error);
 	else if (g_corewar.flags & FLAGS_S && !error)
-		g_corewar.dump = ft_atouint32(g_corewar.number_show, &g_corewar.error);
+		g_corewar.show = ft_atouint32(g_corewar.number_show, &g_corewar.error);
 	else if (g_corewar.flags & FLAGS_O && !error)
 		if ((g_corewar.fd = open(g_corewar.file_output, COF, COM)) < 0)
 			ft_asprintf(&g_corewar.error, "%s: %s", g_corewar.file_output, strerror(errno));

@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 09:40:13 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/14 12:01:41 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/18 09:32:32 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,6 @@ extern struct s_corewar				g_corewar;
 void								corewar_verbosity(void) __attribute__((always_inline));
 void								corewar_setup(void) __attribute__((always_inline));
 void								corewar_loop(void) __attribute__((always_inline));
-void								corewar_dump(void);
-void								corewar_dump_colors(void);
-void								corewar_dump_binary(void);
 
 void								arguments_parser(struct s_corewar *const corewar, char **argv);
 

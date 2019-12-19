@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/01 08:40:36 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/14 12:02:45 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/18 09:10:03 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,9 +135,9 @@ int												libcorewar_arena_cycle(struct s_libcorewar_arena *const arena)
 		}
 		else if (!procs->opcode_cycles)
 		{
-			g_arena_cycle_opcode[info->opvalue](arena, procs);
-			if (arena->functions[info->opvalue])
-				arena->functions[info->opvalue](arena, procs);
+			g_arena_cycle_opcode[procs->opcode_data.info->opvalue](arena, procs);
+			if (arena->functions[procs->opcode_data.info->opvalue])
+				arena->functions[procs->opcode_data.info->opvalue](arena, procs);
 			procs->opcode_data.info = NULL;
 		}
 		else

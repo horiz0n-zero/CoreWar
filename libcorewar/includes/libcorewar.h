@@ -6,7 +6,7 @@
 /*   By: afeuerst <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 10:05:14 by afeuerst          #+#    #+#             */
-/*   Updated: 2019/12/12 14:19:21 by afeuerst         ###   ########.fr       */
+/*   Updated: 2019/12/18 09:33:49 by afeuerst         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,7 +253,10 @@ int											libcorewar_arena_cycle_check(struct s_libcorewar_arena *const aren
 struct s_libcorewar_process					*libcorewar_get_process(struct s_libcorewar_champion *const champion);
 struct s_libcorewar_process					*libcorewar_unset_process(struct s_libcorewar_process *const process); // return next;
 
-
+void										libcorewar_dump(const int fd, struct s_libcorewar_arena *const arena);
+void										libcorewar_dump_colors(const int fd, struct s_libcorewar_arena *const arena);
+void										libcorewar_dump_binary(const int fd, struct s_libcorewar_arena *const arena);
+typedef void								(*t_libcorewar_dump_function)(const int fd, struct s_libcorewar_arena *const arena);
 
 
 #endif
